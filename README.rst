@@ -17,11 +17,11 @@ What does it do?
 This extension will add the field "copyright" to every image file reference (imageOverlayPalette).
 It's working like the fields for title, description (including the override from the file metadata).
 
-All images with a copyright can be listed by a *provided plugin, for example in the imprint / disclaimer* of a page.
+All images with a copyright can be listed by a **provided plugin, for example in the imprint / disclaimer** of a page.
 The list will show each pictures title or name with it's copyright and link to the page where the image is used.
 *Bases on Extbase and Fluid.*
 
-You can *enable a constant* to display the copyright of an image below it.
+You can **enable a constant** to display the copyright of an image below it.
 
 .. image:: doc/fileref-copyright.png
     :scale: 80 %
