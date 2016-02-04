@@ -2,20 +2,13 @@
 
 // TODO: Implement a userFunc which can set the field to required if metadata is empty!
 
+$fieldConf = $GLOBALS['TCA']['sys_file_reference']['columns']['title'];
+$fieldConf['label'] = 'Copyright';
+$fieldConf['config']['placeholder'] = '__row|uid_local|metadata|copyright';
+
+
 $tmp_tgm_copyright_columns = array(
-	'copyright' => array(
-        'l10n_mode' => 'prefixLangTitle',
-		'exclude' => 1,
-		'label' => 'LLL:EXT:filemetadata/Resources/Private/Language/locallang_tca.xlf:sys_file_metadata.copyright',
-		'config' => array(
-			'type' => 'input',
-			'size' => 20,
-            'default' => '',
-            'placeholder' => '__row|uid_local|metadata|copyright',
-            'mode' => 'useOrOverridePlaceholder',
-            'eval' => 'null',
-        ),
-	),
+	'copyright' => $fieldConf
 );
 
 
