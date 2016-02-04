@@ -6,9 +6,6 @@
 			<trans-unit id="tx_tgmcopyright_domain_model_copyright">
 				<source>Copyright</source>
 			</trans-unit>
-			<trans-unit id="tx_tgmcopyright_domain_model_copyright.copyright">
-				<source>Copyright</source>
-			</trans-unit>
 		</body>
 	</file>
 </xliff>
