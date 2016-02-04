@@ -1,0 +1,15 @@
+
+plugin.tx_tgmcopyright_main {
+	view {
+		# cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template root (FE)
+		templateRootPath = EXT:tgm_copyright/Resources/Private/Templates/
+		# cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template partials (FE)
+		partialRootPath = EXT:tgm_copyright/Resources/Private/Partials/
+		# cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template layouts (FE)
+		layoutRootPath = EXT:tgm_copyright/Resources/Private/Layouts/
+	}
+	settings {
+		# cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Display copyright below images
+		showCopyright = 0
+	}
+}

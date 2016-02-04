@@ -1,0 +1,47 @@
+plugin.tx_tgmcopyright_main {
+	view {
+		view {
+			templateRootPaths {
+				10 = EXT:tgm_copyright/Resources/Private/Templates/
+				100 = {$plugin.tx_tgmcopyright_main.view.templateRootPath}
+			}
+			partialRootPaths {
+				10 = EXT:tgm_copyright/Resources/Private/Partials/
+				100 = {$plugin.tx_tgmcopyright_main.view.partialRootPath}
+			}
+			layoutRootPaths {
+				10 = EXT:tgm_copyright/Resources/Private/Layouts/
+				100 = {$plugin.tx_tgmcopyright_main.view.layoutRootPath}
+			}
+		}
+	}
+	persistence {
+		classes {
+			TGM\TgmCopyright\Domain\Model\Copyright {
+				mapping {
+					tableName = sys_file_reference
+				}
+			}
+		}
+	}
+}
+
+[globalVar = LIT:0 < {$plugin.tx_tgmcopyright_main.settings.showCopyright}]
+	tt_content.image.20.rendering {
+		# Addition by tgm_copyright
+		singleNoCaption.singleStdWrap.append = TEXT
+		singleNoCaption.singleStdWrap.append {
+			data = file:current:copyright
+			required = 1
+			htmlSpecialChars = 1
+			br = 1
+			dataWrap = <p class="copyright">© |</p>
+		}
+		noCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+		singleCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+		splitCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+		globalCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+	}
+[end]
+
+

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-02-04T12:07:18Z" product-name="tgm_copyright">
+		<header/>
+		<body>
+			<trans-unit id="tx_tgmcopyright_domain_model_copyright">
+				<source>Copyright</source>
+			</trans-unit>
+			<trans-unit id="tx_tgmcopyright_domain_model_copyright.copyright">
+				<source>Copyright</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

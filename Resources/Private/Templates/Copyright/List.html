@@ -1,0 +1,28 @@
+<f:layout name="Default" />
+
+<f:section name="main">
+
+<f:if condition="{copyrights}">
+	<ul>
+		<f:for each="{copyrights}" as="copyright" iteration="iter">
+			<li>
+				<f:link.page pageUid="{copyright.pid}">
+					<f:if condition="{copyright.title}">
+						<f:then>{copyright.title}</f:then>
+						<f:else>{copyright.originalResource.properties.name}</f:else>
+					</f:if>
+				</f:link.page>
+				<f:if condition="{copyright.copyright}">
+					<f:then>
+						(© {copyright.copyright})
+					</f:then>
+					<f:else>
+						(© {copyright.originalResource.properties.copyright})
+					</f:else>
+				</f:if>
+			</li>
+		</f:for>
+	</ul>
+</f:if>
+
+</f:section>
