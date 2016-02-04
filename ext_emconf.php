@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'TgM Picture Copyrights',
-	'description' => 'This extension will add a copyright field on every image palette and generate a list of all copyright images',
+	'description' => 'This extension will add a copyright field on every image palette and generate a list of all copyright images from the FAL.',
 	'category' => 'plugin',
 	'author' => 'Paul Beck',
 	'author_email' => 'pb@teamgeist-medien.de',
