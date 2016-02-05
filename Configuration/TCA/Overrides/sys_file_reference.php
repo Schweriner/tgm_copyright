@@ -13,4 +13,4 @@ $tmp_tgm_copyright_columns = array(
 
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('sys_file_reference',$tmp_tgm_copyright_columns);
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette('sys_file_reference','imageoverlayPalette','--linebreak--,copyright','after:description');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette('sys_file_reference','imageoverlayPalette','copyright','after:alternative');
