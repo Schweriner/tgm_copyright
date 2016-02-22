@@ -17,6 +17,7 @@ plugin.tx_tgmcopyright_main {
 	}
 	persistence {
 		classes {
+			// TODO: No longer needed due to ext_typoscript_setup.txt
 			TGM\TgmCopyright\Domain\Model\Copyright {
 				mapping {
 					tableName = sys_file_reference
