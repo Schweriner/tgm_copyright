@@ -1,18 +1,16 @@
 plugin.tx_tgmcopyright_main {
 	view {
-		view {
-			templateRootPaths {
-				10 = EXT:tgm_copyright/Resources/Private/Templates/
-				100 = {$plugin.tx_tgmcopyright_main.view.templateRootPath}
-			}
-			partialRootPaths {
-				10 = EXT:tgm_copyright/Resources/Private/Partials/
-				100 = {$plugin.tx_tgmcopyright_main.view.partialRootPath}
-			}
-			layoutRootPaths {
-				10 = EXT:tgm_copyright/Resources/Private/Layouts/
-				100 = {$plugin.tx_tgmcopyright_main.view.layoutRootPath}
-			}
+		templateRootPaths {
+			10 = EXT:tgm_copyright/Resources/Private/Templates/
+			100 = {$plugin.tx_tgmcopyright_main.view.templateRootPath}
+		}
+		partialRootPaths {
+			10 = EXT:tgm_copyright/Resources/Private/Partials/
+			100 = {$plugin.tx_tgmcopyright_main.view.partialRootPath}
+		}
+		layoutRootPaths {
+			10 = EXT:tgm_copyright/Resources/Private/Layouts/
+			100 = {$plugin.tx_tgmcopyright_main.view.layoutRootPath}
 		}
 	}
 	persistence {
