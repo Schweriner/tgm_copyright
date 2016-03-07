@@ -49,18 +49,7 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
     public function listAction()
     {
         // TODO: Should respect the current Rootline
-        $fileReferences = $this->copyrightRepository->findAll();
-        $copyrightReferences = [];
-
-        // TODO: Process the following forEach directly in the SQL Statement
-        /** @var \TGM\TgmCopyright\Domain\Model\Copyright $fileReference */
-        foreach($fileReferences as $fileReference) {
-            // Process each fileReference and find out if itself or the originale file has a copyright
-            if($fileReference->getCopyright()
-                || $fileReference->getOriginalResource()->getOriginalFile()->getProperty('copyright')) {
-                $copyrightReferences[] = $fileReference;
-            }
-        }
-        $this->view->assign('copyrights', $copyrightReferences);
+        $fileReferences = $this->copyrightRepository->findByRootline($this->settings['rootlines']);
+        $this->view->assign('copyrights', $fileReferences);
     }
 }

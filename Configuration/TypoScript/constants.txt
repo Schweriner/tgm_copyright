@@ -9,6 +9,8 @@ plugin.tx_tgmcopyright_main {
 		layoutRootPath = EXT:tgm_copyright/Resources/Private/Layouts/
 	}
 	settings {
+		# cat=plugin.tx_tgmcopyright_main/settings; type=string; label=Starting root PIDs to take the copyright references from (comma separated or empty = all rootlines)
+		rootlines =
 		# cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Display copyright below images
 		showCopyright = 0
 	}
