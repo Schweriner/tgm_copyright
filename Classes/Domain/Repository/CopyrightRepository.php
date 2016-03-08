@@ -53,7 +53,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
           LEFT JOIN sys_file_metadata AS meta ON (file.uid=meta.file)
           LEFT JOIN pages AS p ON (ref.pid=p.uid)
           WHERE (ref.copyright IS NOT NULL OR meta.copyright!="")
-          AND p.deleted=0 AND p.hidden=0 AND file.missing=0 ' . $pidClause);
+          AND p.deleted=0 AND p.hidden=0 AND file.missing=0 AND file.uid>0 ' . $pidClause);
 
         return $query->execute();
     }

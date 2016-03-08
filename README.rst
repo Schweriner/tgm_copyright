@@ -26,6 +26,17 @@ You can **enable a constant** to display the copyright of an image below it.
 .. image:: doc/fileref-copyright.png
     :scale: 80 %
 
+Installation
+==================
+* Install the extension from TER
+* Include the static Typoscript
+* Check the constant editor for specific configurations
+** You can display the copyright of each image below it
+** Add alternative template paths
+** Set a rootline PID to show only those copyright images in the plugin
+* You can add a copyright to an image in each file reference or in the filelist
+
+
 Templating
 ==================
 
@@ -39,7 +50,6 @@ Here you can change the markup example to a glyphicon with a tooltip from Bootst
 Issues and ToDos
 ==================
 
-* The extension does not respect the current rootline yet
 * The display of image copyrights in the frontend is only implemented for css_styled_content, yet.
 * Add an extension setting to make the copyright field required
 
