@@ -30,10 +30,7 @@ Installation
 ==================
 * Install the extension from TER
 * Include the static Typoscript
-* Check the constant editor for specific configurations
-** You can display the copyright of each image below it
-** Add alternative template paths
-** Set a rootline PID to show only those copyright images in the plugin
+* Check the constant editor for specific configurations (you can display the copyright of each image below it, add alternative template paths or set a rootline PID to show only those copyright images in the plugin)
 * You can add a copyright to an image in each file reference or in the filelist
 
 
