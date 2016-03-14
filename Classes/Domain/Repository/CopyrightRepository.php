@@ -54,7 +54,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
           LEFT JOIN pages AS p ON (ref.pid=p.uid)
           WHERE (ref.copyright IS NOT NULL OR meta.copyright!="")
           AND p.deleted=0 AND p.hidden=0 AND file.missing=0 AND file.uid IS NOT NULL
-          AND ref.deleted=0 AND ref.hidden=0 ' . $pidClause);
+          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause);
 
         return $query->execute();
     }
