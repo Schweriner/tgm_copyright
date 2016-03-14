@@ -27,6 +27,7 @@ namespace TGM\TgmCopyright\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * The repository for Copyrights
@@ -46,8 +47,9 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             $pidClause = '';
         }
 
-        $query = $this->createQuery();
-        $query->statement('
+        // First main statement, exclude by all possible exclusion reasons
+        $preQuery = $this->createQuery();
+        $preQuery->statement('
           SELECT ref.* FROM sys_file_reference AS ref
           LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
           LEFT JOIN sys_file_metadata AS meta ON (file.uid=meta.file)
@@ -56,7 +58,35 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
           AND p.deleted=0 AND p.hidden=0 AND file.missing=0 AND file.uid IS NOT NULL
           AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause);
 
-        return $query->execute();
+        $preResults = $preQuery->execute(TRUE);
+
+
+        // Now check if the foreign record has a endtime field which is expired
+        $tableCache = array();
+        $finalRecords = array();
+        $now = time();
+
+        foreach($preResults as $preResult) {
+            if(isset($preResult['tablenames']) && isset($preResult['uid_foreign'])) {
+                if(!array_key_exists($preResult['tablenames'],$tableCache)) {
+                    $tableCache[$preResult['tablenames']] = $GLOBALS['TYPO3_DB']->admin_get_fields($preResult['tablenames']);
+                }
+                // TODO: We could include hidden and deleted here, too. But we've to check if it exists before
+                if(isset($tableCache[$preResult['tablenames']]['endtime'])) {
+                    $foreignRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,endtime',$preResult['tablenames'],'uid='.$preResult['uid_foreign'].' AND (endtime=0 OR endtime>'.$now.')');
+                    if($foreignRecord===FALSE || $foreignRecord===NULL) {
+                        // Exlude if nothing found
+                        continue;
+                    }
+                }
+                // Add the record to the final select if the foreign record is not expired or does not have a field endtime
+                $finalRecords[] = $preResult['uid'];
+            }
+        }
+
+        // Final select
+        $finalQuery = $this->createQuery();
+        return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
     }
 
     /**
