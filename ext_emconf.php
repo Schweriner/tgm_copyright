@@ -11,8 +11,8 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'TgM Picture Copyrights',
-	'description' => 'This extension will add a copyright field on every image palette. The copyright can be shown below each image. Additionally the extension provides a plugin to generate a list / image sitemap from all copyright images.',
+	'title' => 'Picture Copyrights and Image Sitemap',
+	'description' => 'This extension will add a copyright field on every image palette. The copyright can be shown below each image. Additionally the extension provides a plugin to generate a list from all copyright images and it will generate an Image Sitemap XML of all images used on a website.',
 	'category' => 'plugin',
 	'author' => 'Paul Beck',
 	'author_email' => 'pb@teamgeist-medien.de',
@@ -21,7 +21,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'uploadfolder' => '0',
 	'createDirs' => '',
 	'clearCacheOnLoad' => 0,
-	'version' => '0.1.5',
+	'version' => '0.2.0',
 	'constraints' => array(
 		'depends' => array(
 			'typo3' => '6.2.0-7.6.99',

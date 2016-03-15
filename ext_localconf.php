@@ -7,12 +7,12 @@ if (!defined('TYPO3_MODE')) {
 	'TGM.' . $_EXTKEY,
 	'Main',
 	array(
-		'Copyright' => 'list',
+		'Copyright' => 'list,sitemap',
 		
 	),
 	// non-cacheable actions
 	array(
-		'Copyright' => '',
+		'Copyright' => 'sitemap',
 		
 	)
 );
