@@ -44,7 +44,12 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
      * @var string
      */
     protected $title = '';
-    
+
+    /**
+     * @var string
+     */
+    protected $description = '';
+
     /**
      * Returns the copyright
      *
@@ -64,6 +69,18 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
             return $this->title;
         } else if($this->getOriginalResource()->getProperty('title')) {
             return $this->getOriginalResource()->getProperty('title');
+        }
+        return FALSE;
+    }
+
+    /**
+     * @return bool|mixed|string
+     */
+    public function getDescription() {
+        if($this->description) {
+            return $this->description;
+        } else if($this->getOriginalResource()->getProperty('description')) {
+            return $this->getOriginalResource()->getProperty('description');
         }
         return FALSE;
     }

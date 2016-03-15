@@ -1,42 +1,75 @@
 plugin.tx_tgmcopyright_main {
-	view {
-		templateRootPaths {
-			10 = EXT:tgm_copyright/Resources/Private/Templates/
-			100 = {$plugin.tx_tgmcopyright_main.view.templateRootPath}
-		}
-		partialRootPaths {
-			10 = EXT:tgm_copyright/Resources/Private/Partials/
-			100 = {$plugin.tx_tgmcopyright_main.view.partialRootPath}
-		}
-		layoutRootPaths {
-			10 = EXT:tgm_copyright/Resources/Private/Layouts/
-			100 = {$plugin.tx_tgmcopyright_main.view.layoutRootPath}
-		}
-	}
-	persistence {
+  view {
+    templateRootPaths {
+      10 = EXT:tgm_copyright/Resources/Private/Templates/
+      100 = {$plugin.tx_tgmcopyright_main.view.templateRootPath}
+    }
 
-	}
-	settings {
-		rootlines = {$plugin.tx_tgmcopyright_main.settings.rootlines}
-	}
+    partialRootPaths {
+      10 = EXT:tgm_copyright/Resources/Private/Partials/
+      100 = {$plugin.tx_tgmcopyright_main.view.partialRootPath}
+    }
+
+    layoutRootPaths {
+      10 = EXT:tgm_copyright/Resources/Private/Layouts/
+      100 = {$plugin.tx_tgmcopyright_main.view.layoutRootPath}
+    }
+  }
+
+  persistence {
+
+  }
+
+  settings {
+    rootlines = {$plugin.tx_tgmcopyright_main.settings.rootlines}
+  }
 }
 
 [globalVar = LIT:0 < {$plugin.tx_tgmcopyright_main.settings.showCopyright}]
-	tt_content.image.20.rendering {
-		# Addition by tgm_copyright
-		singleNoCaption.singleStdWrap.append = TEXT
-		singleNoCaption.singleStdWrap.append {
-			data = file:current:copyright
-			required = 1
-			htmlSpecialChars = 1
-			br = 1
-			dataWrap = <p class="copyright">© |</p>
-		}
-		noCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-		singleCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-		splitCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-		globalCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-	}
+  tt_content.image.20.rendering {
+    # Addition by tgm_copyright
+    singleNoCaption.singleStdWrap.append = TEXT
+    singleNoCaption.singleStdWrap.append {
+      data = file:current:copyright
+      required = 1
+      htmlSpecialChars = 1
+      br = 1
+      dataWrap = <p class="copyright">© |</p>
+    }
+
+    noCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+    singleCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+    splitCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+    globalCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
+  }
+[end]
+
+[globalVar = LIT:0 < {$plugin.tx_tgmcopyright_main.settings.createSitemap}]
+image-sitemap = PAGE
+image-sitemap {
+  typeNum = 1458065166
+  config {
+    disableAllHeaderCode = 1
+    xhtml_cleaning = none
+    admPanel = 0
+    debug = 0
+    metaCharset = utf-8
+    additionalHeaders = Content-Type:text/xml;charset=utf-8
+    disablePrefixComment = 1
+  }
+  10 = USER
+  10 {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    extensionName = TgmCopyright
+    pluginName = Main
+    vendorName = TGM
+    switchableControllerActions {
+      Copyright {
+        1 = sitemap
+      }
+    }
+  }
+}
 [end]
 
 

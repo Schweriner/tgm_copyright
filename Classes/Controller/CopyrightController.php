@@ -48,8 +48,30 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function listAction()
     {
-        // TODO: Should respect the current Rootline
         $fileReferences = $this->copyrightRepository->findByRootline($this->settings['rootlines']);
         $this->view->assign('copyrights', $fileReferences);
+    }
+
+    public function initializeSitemapAction()
+    {
+        $this->request->setFormat('xml');
+    }
+
+    /**
+     * action sitemap
+     * @return void
+     */
+    public function sitemapAction()
+    {
+        $groupedReferences = array();
+        $fileReferences = $this->copyrightRepository->findForSitemap($this->settings['rootlines']);
+
+        /** @var \TGM\TgmCopyright\Domain\Model\Copyright $fileReference */
+        foreach($fileReferences as $fileReference) {
+            $groupedReferences[$fileReference->getPid()]['pid'] = $fileReference->getPid();
+            $groupedReferences[$fileReference->getPid()]['images'][] = $fileReference;
+        }
+
+        $this->view->assign('groupedReferences', $groupedReferences);
     }
 }

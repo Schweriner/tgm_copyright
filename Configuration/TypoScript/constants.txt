@@ -13,5 +13,7 @@ plugin.tx_tgmcopyright_main {
 		rootlines =
 		# cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Display copyright below images
 		showCopyright = 0
+		# cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Generate an image sitemap on ?type=1458065166
+		createSitemap = 1
 	}
 }

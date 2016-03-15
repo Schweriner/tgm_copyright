@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    <f:for each="{groupedReferences}" as="group" iteration="iter">
+        <url>
+            <loc>{f:uri.page(absolute:1, pageUid: group.pid)}</loc>
+            <f:for each="{group.images}" as="image">
+                <image:image>
+                    <image:loc>{f:uri.image(absolute:1, image: image)}</image:loc>
+                    <f:if condition="{image.title}">
+                        <image:title>{image.title}</image:title>
+                    </f:if>
+                    <f:if condition="{image.description}">
+                        <image:caption>{image.description}</image:caption>
+                    </f:if>
+                </image:image>
+            </f:for>
+        </url>
+    </f:for>
+</urlset>

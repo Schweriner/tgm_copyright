@@ -41,11 +41,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
     public function findByRootline($rootlines) {
 
-        if($rootlines!='') {
-            $pidClause = ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines,1000).')';
-        } else {
-            $pidClause = '';
-        }
+        $pidClause = $this->getPidClause($rootlines);
 
         // First main statement, exclude by all possible exclusion reasons
         $preQuery = $this->createQuery();
@@ -60,20 +56,61 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
         $preResults = $preQuery->execute(TRUE);
 
+        // Now check if the foreign record has a endtime field which is expired
+        $finalRecords = $this->filterPreResultsReturnUids($preResults);
+
+        // Final select
+        $finalQuery = $this->createQuery();
+        return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+    }
+
+    /**
+     * @param string $rootlines
+     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     */
+    public function findForSitemap($rootlines) {
+
+        $pidClause = $this->getPidClause($rootlines);
+
+        // First main statement, exclude by all possible exclusion reasons
+        $preQuery = $this->createQuery();
+
+        $preQuery->statement('
+          SELECT ref.* FROM sys_file_reference AS ref
+          LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
+          LEFT JOIN pages AS p ON (ref.pid=p.uid)
+          WHERE p.deleted=0 AND p.hidden=0
+          AND file.missing=0 AND file.uid IS NOT NULL AND (file.type=2 OR file.type=5)
+          AND (ref.tablenames="tt_content" OR ref.tablenames="pages")
+          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause);
+
+        $preResults = $preQuery->execute(TRUE);
 
         // Now check if the foreign record has a endtime field which is expired
+        $finalRecords = $this->filterPreResultsReturnUids($preResults);
+
+        // Final select
+        $finalQuery = $this->createQuery();
+        return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+    }
+
+    /**
+     * This function will remove remove results which related table records are not hidden by endtime
+     * @param array $preResults raw sql results to filter
+     * @return array
+     */
+    public function filterPreResultsReturnUids($preResults) {
         $tableCache = array();
         $finalRecords = array();
         $now = time();
-
         foreach($preResults as $preResult) {
             if(isset($preResult['tablenames']) && isset($preResult['uid_foreign'])) {
                 if(!array_key_exists($preResult['tablenames'],$tableCache)) {
                     $tableCache[$preResult['tablenames']] = $GLOBALS['TYPO3_DB']->admin_get_fields($preResult['tablenames']);
                 }
                 // TODO: We could include hidden and deleted here, too. But we've to check if it exists before
-                if(isset($tableCache[$preResult['tablenames']]['endtime'])) {
-                    $foreignRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,endtime',$preResult['tablenames'],'uid='.$preResult['uid_foreign'].' AND (endtime=0 OR endtime>'.$now.')');
+                if(isset($tableCache[$preResult['tablenames']]['endtime']) && isset($tableCache[$preResult['tablenames']]['starttime'])) {
+                    $foreignRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,endtime',$preResult['tablenames'],'uid='.$preResult['uid_foreign'].' AND (starttime=0 OR starttime<='.$now.') AND (endtime=0 OR endtime>='.$now.')');
                     if($foreignRecord===FALSE || $foreignRecord===NULL) {
                         // Exlude if nothing found
                         continue;
@@ -83,10 +120,16 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                 $finalRecords[] = $preResult['uid'];
             }
         }
+        return $finalRecords;
+    }
 
-        // Final select
-        $finalQuery = $this->createQuery();
-        return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+    public function getPidClause($rootlines) {
+        if($rootlines!='') {
+            $pidClause = ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines,1000).')';
+        } else {
+            $pidClause = '';
+        }
+        return $pidClause;
     }
 
     /**
