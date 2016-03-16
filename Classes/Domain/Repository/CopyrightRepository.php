@@ -45,13 +45,17 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
         // First main statement, exclude by all possible exclusion reasons
         $preQuery = $this->createQuery();
+
+        $now = time();
+
         $preQuery->statement('
           SELECT ref.* FROM sys_file_reference AS ref
           LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
           LEFT JOIN sys_file_metadata AS meta ON (file.uid=meta.file)
           LEFT JOIN pages AS p ON (ref.pid=p.uid)
           WHERE (ref.copyright IS NOT NULL OR meta.copyright!="")
-          AND p.deleted=0 AND p.hidden=0 AND file.missing=0 AND file.uid IS NOT NULL
+          AND p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
+          AND file.missing=0 AND file.uid IS NOT NULL
           AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause);
 
         $preResults = $preQuery->execute(TRUE);
@@ -75,11 +79,13 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         // First main statement, exclude by all possible exclusion reasons
         $preQuery = $this->createQuery();
 
+        $now = time();
+
         $preQuery->statement('
           SELECT ref.* FROM sys_file_reference AS ref
           LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
           LEFT JOIN pages AS p ON (ref.pid=p.uid)
-          WHERE p.deleted=0 AND p.hidden=0
+          WHERE p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
           AND file.missing=0 AND file.uid IS NOT NULL AND (file.type=2 OR file.type=5)
           AND (ref.tablenames="tt_content" OR ref.tablenames="pages")
           AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause);
