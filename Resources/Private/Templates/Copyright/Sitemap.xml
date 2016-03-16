@@ -6,7 +6,7 @@
             <loc>{f:uri.page(absolute:1, pageUid: group.pid)}</loc>
             <f:for each="{group.images}" as="image">
                 <image:image>
-                    <image:loc>{f:uri.image(absolute:1, image: image)}</image:loc>
+                    <image:loc>{image.publicUrl}</image:loc>
                     <f:if condition="{image.title}">
                         <image:title>{image.title}</image:title>
                     </f:if>

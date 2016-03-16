@@ -59,6 +59,7 @@ Issues and ToDos
 * The display of image copyrights in the frontend is only implemented for css_styled_content, yet.
 * Add an extension setting to make the copyright field required
 * The extension won't display pictures from workspaces in the list-plugin
+* **When upgrading from older versions** you probably have to clear the cache in the install tool to enable the image sitemap page
 
 Changelog
 ==================

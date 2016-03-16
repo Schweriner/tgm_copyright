@@ -85,4 +85,11 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
         return FALSE;
     }
 
+    /**
+     * @return string image public url
+     */
+    public function getPublicUrl() {
+        return \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL').$this->getOriginalResource()->getPublicUrl();
+    }
+
 }
