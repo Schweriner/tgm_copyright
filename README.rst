@@ -44,6 +44,15 @@ To change the copyright text below images (if enabled) just change::
     tt_content.image.20.rendering.singleNoCaption.singleStdWrap.append.dataWrap = <p class="copyright">© |</p>
 Here you can change the markup example to a glyphicon with a tooltip from Bootstrap.
 
+
+Google Image Sitemap XML
+==================
+By default the extension will create an Image Sitemap on **yourdomain.org/?type=1458065166** .
+The sitemap contains ALL images used on the provided rootlines. So the sitemap also contains images without a copyright.
+For now, only images with relations to "pages" and "tt_content" are within the sitemap. A feature to include also other records, e.g. from extensions like news, is planned.
+
+You can disable the sitemap in the constant editor.
+
 Issues and ToDos
 ==================
 
