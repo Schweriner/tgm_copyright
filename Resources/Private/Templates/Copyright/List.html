@@ -14,10 +14,10 @@
 				</f:link.page>
 				<f:if condition="{copyright.copyright}">
 					<f:then>
-						(© {copyright.copyright})
+						(© {copyright.copyright}{f:if(condition: copyright.source, then: ' / ')}{copyright.source})
 					</f:then>
 					<f:else>
-						(© {copyright.originalResource.properties.copyright})
+						(© {copyright.originalResource.properties.copyright}{f:if(condition: copyright.originalResource.properties.source, then: ' / ', else: '')}{copyright.originalResource.properties.source})
 					</f:else>
 				</f:if>
 			</li>
