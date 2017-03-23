@@ -27,7 +27,6 @@ namespace TGM\TgmCopyright\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * The repository for Copyrights
@@ -48,7 +47,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
         $now = time();
 
-        $preQuery->statement('
+        $statement = '
           SELECT ref.* FROM sys_file_reference AS ref
           LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
           LEFT JOIN sys_file_metadata AS meta ON (file.uid=meta.file)
@@ -56,7 +55,9 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
           WHERE (ref.copyright IS NOT NULL OR meta.copyright!="")
           AND p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
           AND file.missing=0 AND file.uid IS NOT NULL
-          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause);
+          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause;
+
+        $preQuery->statement($statement);
 
         $preResults = $preQuery->execute(TRUE);
 
@@ -64,8 +65,13 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $finalRecords = $this->filterPreResultsReturnUids($preResults);
 
         // Final select
-        $finalQuery = $this->createQuery();
-        return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+        if(false === empty($finalRecords)) {
+            $finalQuery = $this->createQuery();
+            return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+        } else {
+            return null;
+        }
+
     }
 
     /**
@@ -81,14 +87,16 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
         $now = time();
 
-        $preQuery->statement('
+        $statement = '
           SELECT ref.* FROM sys_file_reference AS ref
           LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
           LEFT JOIN pages AS p ON (ref.pid=p.uid)
           WHERE p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
           AND file.missing=0 AND file.uid IS NOT NULL AND (file.type=2 OR file.type=5)
           AND (ref.tablenames="tt_content" OR ref.tablenames="pages")
-          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause);
+          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause;
+
+        $preQuery->statement($statement);
 
         $preResults = $preQuery->execute(TRUE);
 
@@ -96,8 +104,13 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $finalRecords = $this->filterPreResultsReturnUids($preResults);
 
         // Final select
-        $finalQuery = $this->createQuery();
-        return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+        if(false === empty($finalRecords)) {
+            $finalQuery = $this->createQuery();
+            return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+        } else {
+            return null;
+        }
+
     }
 
     /**
@@ -130,7 +143,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     }
 
     public function getPidClause($rootlines) {
-        if($rootlines!='') {
+        if($rootlines!=='') {
             $pidClause = ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines,1000).')';
         } else {
             $pidClause = '';
@@ -146,7 +159,6 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
     public static function extendPidListByChildren($pidList = '', $recursive = 0)
     {
-        $recursive = (int)$recursive;
         if ($recursive <= 0) {
             return $pidList;
         }
