@@ -48,7 +48,7 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function listAction()
     {
-        $fileReferences = $this->copyrightRepository->findByRootline($this->settings['rootlines']);
+        $fileReferences = $this->copyrightRepository->findByRootline($this->settings);
         $this->view->assign('copyrights', $fileReferences);
     }
 

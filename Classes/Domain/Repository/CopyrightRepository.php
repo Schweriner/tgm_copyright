@@ -27,6 +27,7 @@ namespace TGM\TgmCopyright\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * The repository for Copyrights
@@ -35,12 +36,17 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
 
     /**
-     * @param string $rootlines
+     * @param array $settings
      * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      */
-    public function findByRootline($rootlines) {
+    public function findByRootline($settings) {
 
-        $pidClause = $this->getPidClause($rootlines);
+        $pidClause = $this->getPidClause($settings['rootlines']);
+        $additionalClause = '';
+
+        if((int)$settings['displayDuplicateImages']===0) {
+            $additionalClause .= ' GROUP BY file.uid';
+        }
 
         // First main statement, exclude by all possible exclusion reasons
         $preQuery = $this->createQuery();
@@ -55,7 +61,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
           WHERE (ref.copyright IS NOT NULL OR meta.copyright!="")
           AND p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
           AND file.missing=0 AND file.uid IS NOT NULL
-          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause;
+          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause . $additionalClause;
 
         $preQuery->statement($statement);
 
