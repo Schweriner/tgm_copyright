@@ -129,7 +129,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                 }
                 // TODO: We could include hidden and deleted here, too. But we've to check if it exists before
                 if(isset($tableCache[$preResult['tablenames']]['endtime']) && isset($tableCache[$preResult['tablenames']]['starttime'])) {
-                    $foreignRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,endtime',$preResult['tablenames'],'uid='.$preResult['uid_foreign'].' AND (starttime=0 OR starttime<='.$now.') AND (endtime=0 OR endtime>='.$now.')');
+                    $foreignRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,endtime',$preResult['tablenames'],'uid='.$preResult['uid_foreign'].' AND hidden=0 AND (starttime=0 OR starttime<='.$now.') AND (endtime=0 OR endtime>='.$now.')');
                     if($foreignRecord===FALSE || $foreignRecord===NULL) {
                         // Exlude if nothing found
                         continue;
