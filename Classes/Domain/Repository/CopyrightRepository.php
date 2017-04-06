@@ -144,7 +144,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
     public function getPidClause($rootlines) {
         if($rootlines!=='') {
-            $pidClause = ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines,1000).')';
+            $pidClause = ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines).')';
         } else {
             $pidClause = '';
         }
@@ -157,11 +157,9 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @param int $recursive recursive levels
      * @return string comma separated list of ids
      */
-    public static function extendPidListByChildren($pidList = '', $recursive = 0)
+    private function extendPidListByChildren($pidList = '')
     {
-        if ($recursive <= 0) {
-            return $pidList;
-        }
+        $recursive = 1000;
         $queryGenerator = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\QueryGenerator::class);
         $recursiveStoragePids = $pidList;
         $storagePids = GeneralUtility::intExplode(',', $pidList);
