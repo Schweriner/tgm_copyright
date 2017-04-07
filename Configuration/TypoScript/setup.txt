@@ -26,8 +26,10 @@ plugin.tx_tgmcopyright_main {
 
     extensiontables {
       tx_news_domain_model_news {
+        // Please enter the correct news detail PID here
         detailPid = 4
-        linkParam = tx_news_pi1[news]=5&tx_news_pi1[controller]=News
+        // Add required typolink.additionalParams here, the UID of the record will be appended by the c:link viewhelper
+        linkParam = &tx_news_pi1[controller]=News&tx_news_pi1[news]=
       }
     }
 

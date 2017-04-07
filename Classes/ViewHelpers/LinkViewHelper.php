@@ -22,11 +22,10 @@ namespace TGM\TgmCopyright\ViewHelpers;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TGM\TgmCopyright\Domain\Model\Copyright;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Service\TypoLinkCodecService;
 
@@ -35,30 +34,34 @@ use TYPO3\CMS\Frontend\Service\TypoLinkCodecService;
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\TypolinkViewHelper
+class LinkViewHelper extends AbstractViewHelper
 {
+
+	/**
+	 * @var bool
+	 */
+	protected $escapeOutput = false;
 
 	/**
 	 * Render
 	 *
-	 * @param string $parameter stdWrap.typolink style parameter string
+	 * @param \TGM\TgmCopyright\Domain\Model\Copyright Records $copyright
 	 * @param string $target
+	 * @param array settings
 	 * @param string $class
 	 * @param string $title
-	 * @param string $additionalParams
 	 * @param array $additionalAttributes
-	 *
 	 * @return string
 	 */
-	public function render($parameter, $target = '', $class = '', $title = '', $additionalParams = '', $additionalAttributes = array())
+	public function render($copyright, $settings, $target = '', $class = '', $title = '', $additionalAttributes = array())
 	{
 		return static::renderStatic(
 			array(
-				'parameter' => $parameter,
+				'copyright' => $copyright,
+				'settings' => $settings,
 				'target' => $target,
 				'class' => $class,
 				'title' => $title,
-				'additionalParams' => $additionalParams,
 				'additionalAttributes' => $additionalAttributes
 			),
 			$this->buildRenderChildrenClosure(),
@@ -76,16 +79,27 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\TypolinkViewHelpe
 	 */
 	public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
 	{
-		DebuggerUtility::var_dump("Test");
-		$parameter = $arguments['parameter'];
+		/** @var Copyright $copyright */
+		$copyright = $arguments['copyright'];
+		$settings = $arguments['settings'];
 		$target = $arguments['target'];
 		$class = $arguments['class'];
 		$title = $arguments['title'];
-		$additionalParams = $arguments['additionalParams'];
 		$additionalAttributes = $arguments['additionalAttributes'];
 
+		if(true === isset($settings[$copyright->getTablenames()])
+			&& true === isset($settings[$copyright->getTablenames()]['detailPid'])
+			&& true === isset($settings[$copyright->getTablenames()]['linkParam'])
+		) {
+			$parameter = $settings[$copyright->getTablenames()]['detailPid'];
+			$additionalParams = $settings[$copyright->getTablenames()]['linkParam'] . $copyright->getUidForeign();
+		} else {
+			$parameter = $copyright->getPid();
+			$additionalParams = '';
+		}
+
 		// Merge the $parameter with other arguments
-		$typolinkParameter = self::createTypolinkParameterArrayFromArguments($parameter, $target, $class, $title, $additionalParams);
+		$typolinkParameter = self::createTypolinkParameterArrayFromArguments($parameter, $target, $class, $title);
 
 		// array(param1 -> value1, param2 -> value2) --> param1="value1" param2="value2" for typolink.ATagParams
 		$extraAttributes = array();
@@ -106,7 +120,9 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\TypolinkViewHelpe
 				array(
 					'typolink.' => array(
 						'parameter' => $typolinkParameter,
+						'additionalParams' => $additionalParams,
 						'ATagParams' => $aTagParams,
+						'useCacheHash' => true,
 					)
 				)
 			);
@@ -114,6 +130,42 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\TypolinkViewHelpe
 
 		return $content;
 	}
+
+	/**
+	 * Transforms ViewHelper arguments to typo3link.parameters.typoscript option as array.
+	 * @param string $parameter Example: 19 _blank - "testtitle \"with whitespace\""
+	 * @param string $target
+	 * @param string $class
+	 * @param string $title
+	 * @return string The final TypoLink string
+	 */
+	protected static function createTypolinkParameterArrayFromArguments($parameter, $target = '', $class = '', $title = '')
+	{
+		$typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
+		$typolinkConfiguration = $typoLinkCodec->decode($parameter);
+		if (empty($typolinkConfiguration)) {
+			return $typolinkConfiguration;
+		}
+
+		// Override target if given in target argument
+		if ($target) {
+			$typolinkConfiguration['target'] = $target;
+		}
+
+		// Combine classes if given in both "parameter" string and "class" argument
+		if ($class) {
+			$classes = explode(' ', trim($typolinkConfiguration['class']) . ' ' . trim($class));
+			$typolinkConfiguration['class'] = implode(' ', array_unique(array_filter($classes)));
+		}
+
+		// Override title if given in title argument
+		if ($title) {
+			$typolinkConfiguration['title'] = $title;
+		}
+
+		return $typoLinkCodec->encode($typolinkConfiguration);
+	}
+
 }
 
 ?>

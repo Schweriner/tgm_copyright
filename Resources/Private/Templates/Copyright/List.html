@@ -1,3 +1,5 @@
+{namespace c=TGM\TgmCopyright\ViewHelpers}
+
 <f:layout name="Default" />
 
 <f:section name="main">
@@ -6,12 +8,12 @@
 		<ul>
 			<f:for each="{copyrights}" as="copyright" iteration="iter">
 				<li>
-					<f:link.page pageUid="{copyright.pid}">
+					<c:link copyright="{copyright}" settings="{settings.extensiontables}">
 						<f:if condition="{copyright.title}">
 							<f:then>{copyright.title}</f:then>
 							<f:else>{copyright.originalResource.properties.name}</f:else>
 						</f:if>
-					</f:link.page>
+					</c:link>
 					<f:if condition="{copyright.copyright}">
 						<f:then>
 							(© {copyright.copyright}{f:if(condition: copyright.source, then: ' / ')}{copyright.source})
