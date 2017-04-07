@@ -51,6 +51,17 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
     protected $description = '';
 
     /**
+     * @var string
+     */
+    protected $tablenames = '';
+
+	/**
+	 * @var int
+	 */
+	protected $uidForeign = 0;
+
+
+    /**
      * Returns the copyright
      *
      * @return string $copyright
@@ -76,7 +87,8 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
     /**
      * @return bool|mixed|string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         if($this->description) {
             return $this->description;
         } else if($this->getOriginalResource()->getProperty('description')) {
@@ -88,8 +100,41 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
     /**
      * @return string image public url
      */
-    public function getPublicUrl() {
+    public function getPublicUrl()
+    {
         return \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL').$this->getOriginalResource()->getPublicUrl();
     }
+
+    /**
+     * @return string
+     */
+    public function getTablenames()
+    {
+        return $this->tablenames;
+    }
+
+    /**
+     * @param string $tablenames
+     */
+    public function setTablenames($tablenames)
+    {
+        $this->tablenames = $tablenames;
+    }
+
+	/**
+	 * @return int
+	 */
+	public function getUidForeign()
+	{
+		return $this->uidForeign;
+	}
+
+	/**
+	 * @param int $uidForeign
+	 */
+	public function setUidForeign($uidForeign)
+	{
+		$this->uidForeign = $uidForeign;
+	}
 
 }

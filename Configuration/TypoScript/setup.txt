@@ -21,7 +21,16 @@ plugin.tx_tgmcopyright_main {
   }
 
   settings {
+
     rootlines = {$plugin.tx_tgmcopyright_main.settings.rootlines}
+
+    extensiontables {
+      tx_news_domain_model_news {
+        detailPid = 4
+        linkParam = tx_news_pi1[news]=5&tx_news_pi1[controller]=News
+      }
+    }
+
   }
 }
 

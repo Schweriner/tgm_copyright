@@ -7,9 +7,12 @@ $fieldConf['label'] = 'Copyright';
 $fieldConf['config']['placeholder'] = '__row|uid_local|metadata|copyright';
 
 
-$tmp_tgm_copyright_columns = array(
-	'copyright' => $fieldConf
-);
+$tmp_tgm_copyright_columns = [
+	'copyright' => $fieldConf,
+	'uid_foreign' => [
+		'type' => 'passthrough'
+	],
+];
 
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('sys_file_reference',$tmp_tgm_copyright_columns);
