@@ -45,7 +45,7 @@ class LinkViewHelper extends AbstractViewHelper
 	/**
 	 * Render
 	 *
-	 * @param \TGM\TgmCopyright\Domain\Model\Copyright Records $copyright
+	 * @param \TGM\TgmCopyright\Domain\Model\Copyright $copyright
 	 * @param string $target
 	 * @param array settings
 	 * @param string $class
