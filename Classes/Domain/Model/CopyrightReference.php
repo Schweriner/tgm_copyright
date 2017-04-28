@@ -30,7 +30,7 @@ namespace TGM\TgmCopyright\Domain\Model;
 /**
  * Copyright
  */
-class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
+class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
 {
 
     /**
@@ -59,6 +59,18 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
 	 * @var int
 	 */
 	protected $uidForeign = 0;
+
+    /**
+     * Will be set inside the controller
+     * @var array
+     */
+	protected $usagePids = [];
+
+    /**
+     * Will be set inside the controller
+     * @var string
+     */
+	protected $additionalLinkParams = '';
 
 
     /**
@@ -136,5 +148,37 @@ class Copyright extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
 	{
 		$this->uidForeign = $uidForeign;
 	}
+
+    /**
+     * @return array
+     */
+    public function getUsagePids()
+    {
+        return $this->usagePids;
+    }
+
+    /**
+     * @param array $usagePids
+     */
+    public function setUsagePids($usagePids)
+    {
+        $this->usagePids = $usagePids;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdditionalLinkParams()
+    {
+        return $this->additionalLinkParams;
+    }
+
+    /**
+     * @param string $additionalLinkParams
+     */
+    public function setAdditionalLinkParams($additionalLinkParams)
+    {
+        $this->additionalLinkParams = $additionalLinkParams;
+    }
 
 }

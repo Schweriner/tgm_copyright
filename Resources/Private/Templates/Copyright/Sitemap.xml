@@ -3,7 +3,7 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <f:for each="{groupedReferences}" as="group" iteration="iter">
         <url>
-            <loc>{f:uri.page(absolute:1, pageUid: group.pid)}</loc>
+            <loc><f:format.htmlentities>{group.uri}</f:format.htmlentities></loc>
             <f:for each="{group.images}" as="image">
                 <image:image>
                     <image:loc>{image.publicUrl}</image:loc>

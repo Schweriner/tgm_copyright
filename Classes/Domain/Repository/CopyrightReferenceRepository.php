@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 /**
  * The repository for Copyrights
  */
-class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
 
     /**
@@ -99,7 +99,6 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
           LEFT JOIN pages AS p ON (ref.pid=p.uid)
           WHERE p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
           AND file.missing=0 AND file.uid IS NOT NULL AND (file.type=2 OR file.type=5)
-          AND (ref.tablenames="tt_content" OR ref.tablenames="pages")
           AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause;
 
         $preQuery->statement($statement);
@@ -128,6 +127,7 @@ class CopyrightRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $tableCache = array();
         $finalRecords = array();
         $now = time();
+        // TODO: Remove $GLOBALS['TYPO3_DB'] for TYPO3 9 CMS
         foreach($preResults as $preResult) {
             if(isset($preResult['tablenames']) && isset($preResult['uid_foreign'])) {
                 if(!array_key_exists($preResult['tablenames'],$tableCache)) {

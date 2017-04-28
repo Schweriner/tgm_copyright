@@ -26,13 +26,43 @@ plugin.tx_tgmcopyright_main {
 
     extensiontables {
       tx_news_domain_model_news {
-        // Please enter the correct news detail PID here
-        detailPid = 4
-        // Add required typolink.additionalParams here, the UID of the record will be appended by the c:link viewhelper
+        # Please enter the correct news detail PID here (may be comma seperated) / stdWrap properties
+        detailPid = 1
+        # Add optional typolink.additionalParams here, the UID of the record will be appended by
         linkParam = &tx_news_pi1[controller]=News&tx_news_pi1[news]=
       }
+      tx_example_domain_model_using_categories {
+        # This config has stdWrap properties. In this example the detailPid is defined by sys_category (current = the record having a copyright images)
+        detailPid = CONTENT
+        detailPid {
+          table = sys_category
+          select {
+            pidInList.dataWrap = root,{field:pid}
+            selectFields = sys_category.*
+            join = sys_category_record_mm ON sys_category_record_mm.uid_local = sys_category.uid
+            where.data = field:_ORIG_uid // field:uid
+            where.intval = 1
+            where.wrap = sys_category_record_mm.uid_foreign=|
+            orderBy = sys_category_record_mm.sorting_foreign
+            languageField = 0 # disable translation handling of sys_category
+          }
+          # Each sys_category uid will end up in in another detailPid. detailPid can be a comma seperated string in case a record has multiple categories defined
+          renderObj = CASE
+          renderObj.key.field = uid
+          renderObj {
+            # sys_category 1 equals to detailPid 50, sys_category 2 equals to detailPid 60 and so on
+            1 = TEXT
+            1.wrap = ,|
+            1.value = 50
+            2 < .1
+            2.value = 60
+          }
+          renderObj.field = uid
+        }
+        # Optional!!!
+        linkParam = &tx_example_pi1[controller]=ExampleController&tx_example_pi1[usingCategories]=
+      }
     }
-
   }
 }
 
