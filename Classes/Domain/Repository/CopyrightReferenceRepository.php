@@ -148,8 +148,12 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         return $finalRecords;
     }
 
+    /**
+     * @param string $rootlines
+     * @return string
+     */
     public function getPidClause($rootlines) {
-        if($rootlines!=='') {
+        if($rootlines!=='' && $rootlines!==null) {
             $pidClause = ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines).')';
         } else {
             $pidClause = '';
