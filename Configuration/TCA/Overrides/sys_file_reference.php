@@ -10,7 +10,9 @@ $fieldConf['config']['placeholder'] = '__row|uid_local|metadata|copyright';
 $tmp_tgm_copyright_columns = [
 	'copyright' => $fieldConf,
 	'uid_foreign' => [
-		'type' => 'passthrough'
+		'config' => [
+			'type' => 'passthrough'
+		]
 	],
 ];
 
