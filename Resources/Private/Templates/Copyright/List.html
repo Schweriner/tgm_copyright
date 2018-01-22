@@ -6,22 +6,24 @@
 		<ul>
 			<f:for each="{copyrightReferences}" as="copyrightReference">
 				<f:for each="{copyrightReference.usagePids}" as="usagePid">
-					<li>
-						<f:link.typolink parameter="{usagePid}" additionalParams="{copyrightReference.additionalLinkParams}">
-							<f:if condition="{copyrightReference.title}">
-								<f:then>{copyrightReference.title}</f:then>
-								<f:else>{copyrightReference.originalResource.properties.name}</f:else>
+                    			<f:if condition="{copyrightReference.copyright} || {copyrightReference.originalResource.properties.copyright}">
+						<li>
+							<f:link.typolink parameter="{usagePid}" additionalParams="{copyrightReference.additionalLinkParams}">
+								<f:if condition="{copyrightReference.title}">
+									<f:then>{copyrightReference.title}</f:then>
+									<f:else>{copyrightReference.originalResource.properties.name}</f:else>
+								</f:if>
+							</f:link.typolink>
+							<f:if condition="{copyrightReference.copyright}">
+								<f:then>
+									(© {copyrightReference.copyright}{f:if(condition: copyrightReference.source, then: ' / ')}{copyrightReference.source})
+								</f:then>
+								<f:else>
+									(© {copyrightReference.originalResource.properties.copyright}{f:if(condition: copyrightReference.originalResource.properties.source, then: ' / ', else: '')}{copyrightReference.originalResource.properties.source})
+								</f:else>
 							</f:if>
-						</f:link.typolink>
-						<f:if condition="{copyrightReference.copyright}">
-							<f:then>
-								(© {copyrightReference.copyright}{f:if(condition: copyrightReference.source, then: ' / ')}{copyrightReference.source})
-							</f:then>
-							<f:else>
-								(© {copyrightReference.originalResource.properties.copyright}{f:if(condition: copyrightReference.originalResource.properties.source, then: ' / ', else: '')}{copyrightReference.originalResource.properties.source})
-							</f:else>
-						</f:if>
-					</li>
+						</li>
+					</f:if>
 				</f:for>
 			</f:for>
 		</ul>
