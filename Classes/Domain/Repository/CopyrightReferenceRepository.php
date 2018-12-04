@@ -41,7 +41,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
      */
     public function findByRootline($settings) {
 
-        $pidClause = $this->getPidClause($settings['rootlines']);
+        $pidClause = $this->getStatementDefaults($settings['rootlines']);
         $additionalClause = '';
 
         if((int)$settings['displayDuplicateImages']===0) {
@@ -86,7 +86,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
      */
     public function findForSitemap($rootlines) {
 
-        $pidClause = $this->getPidClause($rootlines);
+        $pidClause = $this->getStatementDefaults($rootlines);
 
         // First main statement, exclude by all possible exclusion reasons
         $preQuery = $this->createQuery();
@@ -152,14 +152,16 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
      * @param string $rootlines
      * @return string
      */
-    public function getPidClause($rootlines) {
+    public function getStatementDefaults($rootlines) {
         $rootlines = (string) $rootlines;
+        $sysLanguage = (int) $GLOBALS['TSFE']->sys_language_uid;
+        $defaultStatement = ' AND ref.sys_language_uid=' . $sysLanguage;
         if($rootlines!=='') {
-            $pidClause = ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines).')';
+            $defaultStatement .= ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines).')';
         } else {
-            $pidClause = '';
+            $defaultStatement .= '';
         }
-        return $pidClause;
+        return $defaultStatement;
     }
 
     /**
