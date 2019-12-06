@@ -6,7 +6,7 @@ namespace TGM\TgmCopyright\Controller;
  *
  *  Copyright notice
  *
- *  (c) 2016 Paul Beck <pb@teamgeist-medien.de>, Teamgeist Medien GbR
+ *  (c) 2016 Paul Beck <hi@toll-paul.de>, Teamgeist Medien GbR
  *
  *  All rights reserved
  *
