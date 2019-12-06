@@ -2,8 +2,7 @@
 # Table structure for table 'sys_file_reference'
 #
 CREATE TABLE sys_file_reference (
-
-	copyright varchar(255) DEFAULT NULL,
+	copyright varchar(255) DEFAULT NULL
 
 );
 
@@ -11,7 +10,5 @@ CREATE TABLE sys_file_reference (
 # Table structure for table 'sys_file_metadata'
 #
 CREATE TABLE sys_file_metadata (
-
-	copyright varchar(255) DEFAULT '' NOT NULL,
-
+	copyright varchar(255) DEFAULT '' NOT NULL
 );

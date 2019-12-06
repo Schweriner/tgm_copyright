@@ -4,7 +4,7 @@ if (!defined('TYPO3_MODE')) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-	'TGM.' . $_EXTKEY,
+	'TGM.' . 'tgm_copyright',
 	'Main',
 	array(
 		'Copyright' => 'list,sitemap',
