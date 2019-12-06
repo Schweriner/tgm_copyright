@@ -1,0 +1,2 @@
+# cat=basic/enable/sort5; type=boolean; label=EXPERIMENTAL! Make the Copyright Field of File References Required (TYPO3 9.5 LTS only)
+copyrightRequired = 0
