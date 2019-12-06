@@ -66,25 +66,6 @@ plugin.tx_tgmcopyright_main {
   }
 }
 
-[globalVar = LIT:0 < {$plugin.tx_tgmcopyright_main.settings.showCopyright}]
-  tt_content.image.20.rendering {
-    # Addition by tgm_copyright
-    singleNoCaption.singleStdWrap.append = TEXT
-    singleNoCaption.singleStdWrap.append {
-      data = file:current:copyright
-      required = 1
-      htmlSpecialChars = 1
-      br = 1
-      dataWrap = <p class="copyright">© |</p>
-    }
-
-    noCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-    singleCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-    splitCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-    globalCaption.singleStdWrap.append < .singleNoCaption.singleStdWrap.append
-  }
-[end]
-
 [globalVar = LIT:0 < {$plugin.tx_tgmcopyright_main.settings.createSitemap}]
 image-sitemap = PAGE
 image-sitemap {
