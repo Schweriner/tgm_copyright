@@ -134,9 +134,9 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
 
                 if(gettype($singleExtensionTableConfiguration['detailPid']) === 'array') {
 
-                    /** @var \TYPO3\CMS\Extbase\Service\TypoScriptService $typoscriptService */
+                    /** @var \TYPO3\CMS\Core\TypoScript\TypoScriptService $typoscriptService */
 
-                    $typoscriptService = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Service\TypoScriptService::class);
+                    $typoscriptService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\TypoScript\TypoScriptService::class);
                     $tsArray = $typoscriptService->convertPlainArrayToTypoScriptArray($singleExtensionTableConfiguration['detailPid']);
 
                     $rawRecord = $pageRepository->getRawRecord($copyrightReference->getTablenames(), $copyrightReference->getUidForeign());

@@ -53,6 +53,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
 
         $now = time();
 
+        // TODO: Migrate to QueryBuilder for Cross-DB-Engines
         $statement = '
           SELECT ref.* FROM sys_file_reference AS ref
           LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
@@ -75,7 +76,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
             $finalQuery = $this->createQuery();
             return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
         } else {
-            return null;
+            return [];
         }
 
     }
@@ -93,6 +94,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
 
         $now = time();
 
+        // TODO: Migrate to QueryBuilder for Cross-DB-Engines
         $statement = '
           SELECT ref.* FROM sys_file_reference AS ref
           LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
@@ -124,27 +126,34 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
      * @return array
      */
     public function filterPreResultsReturnUids($preResults) {
-        $tableCache = array();
-        $finalRecords = array();
-        $now = time();
-        // TODO: Remove $GLOBALS['TYPO3_DB'] for TYPO3 9 CMS
+
+        $finalRecords = [];
+
         foreach($preResults as $preResult) {
             if(isset($preResult['tablenames']) && isset($preResult['uid_foreign'])) {
-                if(!array_key_exists($preResult['tablenames'],$tableCache)) {
-                    $tableCache[$preResult['tablenames']] = $GLOBALS['TYPO3_DB']->admin_get_fields($preResult['tablenames']);
+
+                /*
+                 * Thanks to the QueryBuilder we don't have to check end- and starttime, deleted, hidden manually before because of the default RestrictionContainers
+                 * Just check if there is a result or not
+                 */
+                $queryBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable($preResult['tablenames']);
+                $foreignRecord = $queryBuilder
+                    ->select('uid')
+                    ->from($preResult['tablenames'])
+                    ->where(
+                        $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($preResult['uid_foreign']))
+                    )->execute()->fetch();
+
+                if($foreignRecord === false || $foreignRecord === false) {
+                    // Exlude if nothing found
+                    continue;
                 }
-                // TODO: We could include hidden and deleted here, too. But we've to check if it exists before
-                if(isset($tableCache[$preResult['tablenames']]['endtime']) && isset($tableCache[$preResult['tablenames']]['starttime'])) {
-                    $foreignRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,endtime',$preResult['tablenames'],'uid='.$preResult['uid_foreign'].' AND hidden=0 AND (starttime=0 OR starttime<='.$now.') AND (endtime=0 OR endtime>='.$now.')');
-                    if($foreignRecord===FALSE || $foreignRecord===NULL) {
-                        // Exlude if nothing found
-                        continue;
-                    }
-                }
+
                 // Add the record to the final select if the foreign record is not expired or does not have a field endtime
                 $finalRecords[] = $preResult['uid'];
             }
         }
+
         return $finalRecords;
     }
 
