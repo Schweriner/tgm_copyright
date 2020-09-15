@@ -163,7 +163,8 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
      */
     public function getStatementDefaults($rootlines) {
         $rootlines = (string) $rootlines;
-        $sysLanguage = (int) $GLOBALS['TSFE']->sys_language_uid;
+        $context = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class);
+        $sysLanguage = (int) $context->getPropertyFromAspect('language', 'id');
         $defaultStatement = ' AND ref.sys_language_uid=' . $sysLanguage;
         if($rootlines!=='') {
             $defaultStatement .= ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines).')';

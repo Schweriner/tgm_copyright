@@ -27,7 +27,6 @@ namespace TGM\TgmCopyright\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -38,11 +37,16 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
 
     /**
      * copyrightRepository
-     *
      * @var \TGM\TgmCopyright\Domain\Repository\CopyrightReferenceRepository
-     * @inject
      */
     protected $copyrightReferenceRepository = NULL;
+
+    /**
+     * @param \TGM\TgmCopyright\Domain\Repository\CopyrightReferenceRepository $copyrightReferenceRepository
+     */
+    public function injectCopyrightReferenceRepository(\TGM\TgmCopyright\Domain\Repository\CopyrightReferenceRepository $copyrightReferenceRepository) {
+        $this->copyrightReferenceRepository = $copyrightReferenceRepository;
+    }
     
     /**
      * action list
@@ -59,7 +63,6 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
 
         $this->view->assignMultiple([
             'copyrightReferences' => $copyrightReferences,
-            // 'copyrights' just passed as fallback for templates below v < 1.0.0
             'copyrights' => $copyrightReferences,
         ]);
 

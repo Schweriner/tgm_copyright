@@ -17,7 +17,6 @@ plugin.tx_tgmcopyright_main {
   }
 
   persistence {
-
   }
 
   settings {
@@ -66,7 +65,7 @@ plugin.tx_tgmcopyright_main {
   }
 }
 
-[globalVar = LIT:0 < {$plugin.tx_tgmcopyright_main.settings.createSitemap}]
+[{$plugin.tx_tgmcopyright_main.settings.createSitemap} == '1']
 image-sitemap = PAGE
 image-sitemap {
   typeNum = 1458065166
