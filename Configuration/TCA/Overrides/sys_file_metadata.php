@@ -1,16 +1,16 @@
 <?php
 
-$temp_metacolumns = array(
-	'copyright' => array(
+$temp_metacolumns = [
+	'copyright' => [
 		'exclude' => 1,
 		'label' => 'Copyright',
-		'config' => array(
+		'config' => [
 			'type' => 'input',
 			'size' => 20,
 			'eval' => 'trim'
-		),
-	),
-);
+        ],
+    ],
+];
 
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('sys_file_metadata',$temp_metacolumns);
