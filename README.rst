@@ -11,3 +11,5 @@ Documentation
 =============
 
 A full documentation can be found in the wiki: https://github.com/teamgeist/tgm_copyright/wiki
+
+The development of this Extension is sponsored by https://nerdost.net - thanks!
