@@ -4,15 +4,15 @@ if (!defined('TYPO3_MODE')) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-	'TGM.' . 'tgm_copyright',
+    'TgmCopyright',
 	'Main',
 	[
-		'Copyright' => 'list,sitemap',
+		\TGM\TgmCopyright\Controller\CopyrightController::class => 'list,sitemap',
 
     ],
 	// non-cacheable actions
 	[
-		'Copyright' => 'sitemap',
+		\TGM\TgmCopyright\Controller\CopyrightController::class => 'sitemap',
     ]
 );
 

@@ -121,8 +121,8 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
 
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        /** @var \TYPO3\CMS\Frontend\Page\PageRepository $pageRepository */
-        $pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\Page\PageRepository::class);
+        /** @var \TYPO3\CMS\Core\Domain\Repository\PageRepository $pageRepository */
+        $pageRepository = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Domain\Repository\PageRepository::class);
 
         /** @var \TGM\TgmCopyright\Domain\Model\CopyrightReference $copyrightReference */
         foreach ($copyrightReferences as $copyrightReference) {
