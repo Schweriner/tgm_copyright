@@ -114,7 +114,7 @@ class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
      */
     public function getPublicUrl()
     {
-        return \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL').$this->getOriginalResource()->getPublicUrl();
+        return $this->getOriginalResource()->getPublicUrl();
     }
 
     /**
