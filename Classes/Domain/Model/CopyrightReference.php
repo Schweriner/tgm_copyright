@@ -114,6 +114,11 @@ class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
      */
     public function getPublicUrl()
     {
+        if(false === \TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($this->getOriginalResource()->getPublicUrl())) {
+            /** @var \TYPO3\CMS\Core\Http\NormalizedParams $requestAttributes */
+            $requestAttributes = $GLOBALS['TYPO3_REQUEST']->getAttributes()['normalizedParams'];
+            return $requestAttributes->getRequestHost() . $this->getOriginalResource()->getPublicUrl();
+        }
         return $this->getOriginalResource()->getPublicUrl();
     }
 
