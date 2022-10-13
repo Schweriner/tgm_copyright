@@ -54,7 +54,6 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function listAction()
     {
-
         $copyrightReferences = $this->copyrightReferenceRepository->findByRootline($this->settings);
 
         if(count($copyrightReferences) > 0) {
@@ -97,7 +96,14 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
                         $additionalArguments = GeneralUtility::explodeUrl2Array($copyrightReference->getAdditionalLinkParams());
                     }
 
-                    $uri = $this->uriBuilder->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($usagePid)->setArguments($additionalArguments)->buildFrontendUri();
+                    /** @var \TYPO3\CMS\Core\Http\NormalizedParams $requestAttributes */
+                    $requestAttributes = $GLOBALS['TYPO3_REQUEST']->getAttributes()['normalizedParams'];
+
+                    $uri = $requestAttributes->getRequestHost() .
+                        htmlentities($this->uriBuilder->reset()->setCreateAbsoluteUri(false)
+                            ->setTargetPageUid($usagePid)->setArguments($additionalArguments)->buildFrontendUri(),
+                            ENT_QUOTES, 'UTF-8', true
+                        );
                     $hashedUri = md5($uri);
 
                     $groupedReferences[$hashedUri]['uri'] = $uri;
