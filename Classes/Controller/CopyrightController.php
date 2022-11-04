@@ -99,11 +99,17 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
                     /** @var \TYPO3\CMS\Core\Http\NormalizedParams $requestAttributes */
                     $requestAttributes = $GLOBALS['TYPO3_REQUEST']->getAttributes()['normalizedParams'];
 
+                    $imagePath = $this->uriBuilder->reset()->setCreateAbsoluteUri(false)
+                        ->setTargetPageUid($usagePid)->setArguments($additionalArguments)->buildFrontendUri();
+
+                    if(false === GeneralUtility::isValidUrl($imagePath)) {
+                        $imagePath = $requestAttributes->getRequestHost() . $imagePath;
+                    }
+
+                    // TODO: If the $imagePath was valid instant, an umlaut domain must be excluded from htmlentities
                     $uri = $requestAttributes->getRequestHost() .
-                        htmlentities($this->uriBuilder->reset()->setCreateAbsoluteUri(false)
-                            ->setTargetPageUid($usagePid)->setArguments($additionalArguments)->buildFrontendUri(),
-                            ENT_QUOTES, 'UTF-8', true
-                        );
+                        htmlentities($imagePath, ENT_QUOTES, 'UTF-8', true);
+
                     $hashedUri = md5($uri);
 
                     $groupedReferences[$hashedUri]['uri'] = $uri;
