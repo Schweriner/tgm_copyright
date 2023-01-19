@@ -65,6 +65,7 @@ plugin.tx_tgmcopyright_main {
   }
 }
 
+# TODO: Generate the sitemap with a seo-sitemap-provider
 [{$plugin.tx_tgmcopyright_main.settings.createSitemap} == '1']
 image-sitemap = PAGE
 image-sitemap {

@@ -45,7 +45,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         $pidClause = $this->getStatementDefaults($settings['rootlines']);
         $additionalClause = '';
 
-        if((int)$settings['displayDuplicateImages']===0) {
+        if((int)$settings['displayDuplicateImages'] === 0) {
             $additionalClause .= ' GROUP BY file.uid';
         }
 
@@ -61,9 +61,9 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
           LEFT JOIN sys_file_metadata AS meta ON (file.uid=meta.file)
           LEFT JOIN pages AS p ON (ref.pid=p.uid)
           WHERE (ref.copyright IS NOT NULL OR meta.copyright!="")
-          AND p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
+          AND p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<=' . $now . ') AND (p.endtime=0 OR p.endtime>='. $now .')
           AND file.missing=0 AND file.uid IS NOT NULL
-          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause . $additionalClause;
+          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 ' . $pidClause . $additionalClause;
 
         $preQuery->statement($statement);
 
@@ -75,7 +75,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         // Final select
         if(false === empty($finalRecords)) {
             $finalQuery = $this->createQuery();
-            return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
+            return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN(' . implode(',', $finalRecords) . ')')->execute();
         }
 
         return [];
@@ -131,14 +131,17 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         if(false === empty($finalRecords)) {
 
             $queryBuilder->resetQueryParts();
-            $queryBuilder
-                ->select('uid')
+            $records = $queryBuilder
+                ->select('*')
                 ->from('sys_file_reference')
                 ->where(
                     $queryBuilder->expr()->in('uid', $finalRecords)
                 )
                 ->execute()
                 ->fetchAllAssociative();
+
+            $dataMapper = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+            return $dataMapper->map(\TGM\TgmCopyright\Domain\Model\CopyrightReference::class, $records);
         }
 
         return [];
@@ -154,7 +157,9 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         $finalRecords = [];
 
         foreach($preResults as $preResult) {
-            if(isset($preResult['tablenames']) && isset($preResult['uid_foreign'])) {
+            if((isset($preResult['tablenames']) && isset($preResult['uid_foreign']))
+                && (strlen($preResult['tablenames']) > 0 && strlen($preResult['uid_foreign']) > 0))
+                {
 
                 /*
                  * Thanks to the QueryBuilder we don't have to check end- and starttime, deleted, hidden manually before because of the default RestrictionContainers

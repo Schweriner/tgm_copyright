@@ -13,13 +13,13 @@ $EM_CONF[$_EXTKEY] = [
   'state' => 'beta',
   'uploadfolder' => false,
   'clearCacheOnLoad' => 1,
-  'version' => '3.1.1',
+  'version' => '3.2.0',
   'constraints' => 
   [
     'depends' => 
     [
-      'typo3' => '10.4.18-11.5.99',
-      'filemetadata' => '10.4.18-11.5.99',
+      'typo3' => '11.5.0-11.5.99',
+      'filemetadata' => '11.5.0-11.5.99',
     ],
     'conflicts' => 
     [
