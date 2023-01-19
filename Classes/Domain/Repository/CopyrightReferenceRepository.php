@@ -26,6 +26,8 @@ namespace TGM\TgmCopyright\Domain\Repository;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -74,53 +76,76 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         if(false === empty($finalRecords)) {
             $finalQuery = $this->createQuery();
             return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
-        } else {
-            return [];
         }
 
+        return [];
     }
 
     /**
      * @param string $rootlines
-     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @return array
      */
     public function findForSitemap($rootlines) {
 
-        $pidClause = $this->getStatementDefaults($rootlines);
+        $context = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class);
+        $sysLanguage = (int) $context->getPropertyFromAspect('language', 'id');
 
-        // First main statement, exclude by all possible exclusion reasons
-        $preQuery = $this->createQuery();
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');
 
-        $now = time();
+        $constraints = [
+            $queryBuilder->expr()->eq('ref.sys_language_uid', $sysLanguage),
+            $queryBuilder->expr()->eq('missing', 0),
+            $queryBuilder->expr()->isNotNull('file.uid'),
+            $queryBuilder->expr()->in('file.type', [2, 5]),
+        ];
 
-        // TODO: Migrate to QueryBuilder for Cross-DB-Engines
-        $statement = '
-          SELECT ref.* FROM sys_file_reference AS ref
-          LEFT JOIN sys_file AS file ON (file.uid=ref.uid_local)
-          LEFT JOIN pages AS p ON (ref.pid=p.uid)
-          WHERE p.deleted=0 AND p.hidden=0 AND (p.starttime=0 OR p.starttime<='.$now.') AND (p.endtime=0 OR p.endtime>='.$now.')
-          AND file.missing=0 AND file.uid IS NOT NULL AND (file.type=2 OR file.type=5)
-          AND ref.deleted=0 AND ref.hidden=0 AND ref.t3ver_wsid=0 '. $pidClause;
+        if ('' !== $rootlines) {
+            $constraints[] = $queryBuilder->expr()->in('ref.pid', $this->extendPidListByChildren($rootlines));
+        }
 
-        $preQuery->statement($statement);
-
-        $preResults = $preQuery->execute(TRUE);
+        $preResults = $queryBuilder
+            ->selectLiteral('ref.uid', 'ref.tablenames', 'ref.uid_foreign')
+            ->from('sys_file_reference', 'ref')
+            ->leftJoin(
+                'ref',
+                'sys_file',
+                'file',
+                $queryBuilder->expr()->eq('file.uid', 'ref.uid_local')
+            )
+            ->join(
+                'ref',
+                'pages',
+                'p',
+                $queryBuilder->expr()->eq('ref.pid', 'p.uid')
+            )
+            ->where(
+                ...$constraints
+            )
+            ->execute()
+            ->fetchAllAssociative();
 
         // Now check if the foreign record has a endtime field which is expired
         $finalRecords = $this->filterPreResultsReturnUids($preResults);
 
         // Final select
         if(false === empty($finalRecords)) {
-            $finalQuery = $this->createQuery();
-            return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN('.implode(',',$finalRecords).')')->execute();
-        } else {
-            return null;
+
+            $queryBuilder->resetQueryParts();
+            $queryBuilder
+                ->select('uid')
+                ->from('sys_file_reference')
+                ->where(
+                    $queryBuilder->expr()->in('uid', $finalRecords)
+                )
+                ->execute()
+                ->fetchAllAssociative();
         }
 
+        return [];
     }
 
     /**
-     * This function will remove remove results which related table records are not hidden by endtime
+     * This function will remove results which related table records are not hidden by endtime
      * @param array $preResults raw sql results to filter
      * @return array
      */
@@ -141,10 +166,12 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
                     ->from($preResult['tablenames'])
                     ->where(
                         $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($preResult['uid_foreign']))
-                    )->execute()->fetch();
+                    )
+                    ->execute()
+                    ->fetchAssociative();
 
                 if($foreignRecord === false || $foreignRecord === false) {
-                    // Exlude if nothing found
+                    // Exclude if nothing found
                     continue;
                 }
 
