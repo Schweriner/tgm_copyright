@@ -9,8 +9,7 @@
     "issues": "https://github.com/Schweriner/tgm_copyright/issues"
   },
   "require": {
-    "typo3/cms-core": "^11.5.0",
-    "typo3/cms-filemetadata": "^11.5.0"
+    "typo3/cms-core": "^11.5.0"
   },
   "autoload": {
     "psr-4": {
