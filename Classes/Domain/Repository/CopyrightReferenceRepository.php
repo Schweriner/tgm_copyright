@@ -42,7 +42,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
      */
     public function findByRootline($settings) {
 
-        $pidClause = $this->getStatementDefaults($settings['rootlines']);
+        $pidClause = $this->getStatementDefaults($settings['rootlines'], (bool) $settings['onlyCurrentPage']);
         $additionalClause = '';
 
         if((int)$settings['displayDuplicateImages'] === 0) {
@@ -87,6 +87,8 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
      */
     public function findForSitemap($rootlines) {
 
+        $typo3Version = new \TYPO3\CMS\Core\Information\Typo3Version();
+
         $context = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class);
         $sysLanguage = (int) $context->getPropertyFromAspect('language', 'id');
 
@@ -121,8 +123,13 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
             ->where(
                 ...$constraints
             )
-            ->execute()
-            ->fetchAllAssociative();
+            ->execute();
+
+        if(version_compare($typo3Version->getVersion(),'11', '<')) {
+            $preResults = $preResults->fetchAll();
+        } else {
+            $preResults = $preResults->fetchAllAssociative();
+        }
 
         // Now check if the foreign record has a endtime field which is expired
         $finalRecords = $this->filterPreResultsReturnUids($preResults);
@@ -137,10 +144,17 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
                 ->where(
                     $queryBuilder->expr()->in('uid', $finalRecords)
                 )
-                ->execute()
-                ->fetchAllAssociative();
+                ->execute();
 
-            $dataMapper = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+            if(version_compare($typo3Version->getVersion(),'11', '<')) {
+                $records = $records->fetchAll();
+                $objectManager = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
+                $dataMapper = $objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+            } else {
+                $records = $records->fetchAllAssociative();
+                $dataMapper = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class);
+            }
+
             return $dataMapper->map(\TGM\TgmCopyright\Domain\Model\CopyrightReference::class, $records);
         }
 
@@ -172,8 +186,15 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
                     ->where(
                         $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($preResult['uid_foreign']))
                     )
-                    ->execute()
-                    ->fetchAssociative();
+                    ->execute();
+
+                $typo3Version = new \TYPO3\CMS\Core\Information\Typo3Version();
+
+                if(version_compare($typo3Version->getVersion(),'11', '<')) {
+                    $foreignRecord = $foreignRecord->fetch();
+                } else {
+                    $foreignRecord = $foreignRecord->fetchAssociative();
+                }
 
                 if($foreignRecord === false || $foreignRecord === false) {
                     // Exclude if nothing found
@@ -190,18 +211,24 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
 
     /**
      * @param string $rootlines
+     * @param bool $onlyCurrentPage
      * @return string
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      */
-    public function getStatementDefaults($rootlines) {
+    public function getStatementDefaults($rootlines, $onlyCurrentPage = false) {
         $rootlines = (string) $rootlines;
         $context = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class);
         $sysLanguage = (int) $context->getPropertyFromAspect('language', 'id');
         $defaultStatement = ' AND ref.sys_language_uid=' . $sysLanguage;
-        if($rootlines!=='') {
+
+        if($onlyCurrentPage === true) {
+            $defaultStatement .= ' AND ref.pid=' . $GLOBALS['TSFE']->id;
+        } else if($rootlines!=='') {
             $defaultStatement .= ' AND ref.pid IN('.$this->extendPidListByChildren($rootlines).')';
         } else {
             $defaultStatement .= '';
         }
+
         return $defaultStatement;
     }
 

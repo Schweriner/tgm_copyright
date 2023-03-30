@@ -54,6 +54,11 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function listAction()
     {
+
+        if(false === isset($this->settings['onlyCurrentPage'])) {
+            $this->settings['onlyCurrentPage'] = false;
+        }
+
         $copyrightReferences = $this->copyrightReferenceRepository->findByRootline($this->settings);
 
         if(count($copyrightReferences) > 0) {
