@@ -54,6 +54,9 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function listAction()
     {
+        if(false === isset($this->settings['onlyCurrentPage'])) {
+            $this->settings['onlyCurrentPage'] = false;
+        }
 
         $copyrightReferences = $this->copyrightReferenceRepository->findByRootline($this->settings);
 
@@ -65,12 +68,14 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
             'copyrightReferences' => $copyrightReferences,
             'copyrights' => $copyrightReferences,
         ]);
-
+        
+        return $this->htmlResponse();
     }
 
     public function initializeSitemapAction()
     {
-        $this->request->setFormat('xml');
+        $this->request = $this->request->withFormat('xml');
+        // $this->request->setFormat('xml');
     }
 
     /**
@@ -79,7 +84,6 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function sitemapAction()
     {
-
         $groupedReferences = array();
         $copyrightReferences = $this->copyrightReferenceRepository->findForSitemap($this->settings['rootlines']);
 
@@ -97,7 +101,22 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
                         $additionalArguments = GeneralUtility::explodeUrl2Array($copyrightReference->getAdditionalLinkParams());
                     }
 
-                    $uri = $this->uriBuilder->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($usagePid)->setArguments($additionalArguments)->buildFrontendUri();
+                    /** @var \TYPO3\CMS\Core\Http\NormalizedParams $requestAttributes */
+                    $requestAttributes = $GLOBALS['TYPO3_REQUEST']->getAttributes()['normalizedParams'];
+
+                    $imagePath = $this->uriBuilder->reset()->setCreateAbsoluteUri(false)
+                        ->setTargetPageUid($usagePid)->setArguments($additionalArguments)->buildFrontendUri();
+
+
+                    $parsedUrl = parse_url($imagePath);
+
+                    if(false === isset($parsedUrl['host'])) {
+                        $imagePath = $requestAttributes->getRequestHost() . $imagePath;
+                    }
+
+                    // TODO: If the $imagePath was valid instant, an umlaut domain must be excluded from htmlentities
+                    $uri = htmlentities($imagePath, ENT_QUOTES, 'UTF-8', true);
+
                     $hashedUri = md5($uri);
 
                     $groupedReferences[$hashedUri]['uri'] = $uri;
@@ -108,7 +127,8 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
         }
 
         $this->view->assign('groupedReferences', $groupedReferences);
-
+        
+        return $this->htmlResponse();
     }
 
     /**

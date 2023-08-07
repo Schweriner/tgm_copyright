@@ -1,5 +1,6 @@
 <?php
-if (!defined('TYPO3_MODE')) {
+
+if (!defined('TYPO3')) {
 	die('Access denied.');
 }
 
@@ -7,8 +8,15 @@ if (!defined('TYPO3_MODE')) {
     'TgmCopyright',
 	'Main',
 	[
-		\TGM\TgmCopyright\Controller\CopyrightController::class => 'list,sitemap',
+		\TGM\TgmCopyright\Controller\CopyrightController::class => 'list',
+    ],
+);
 
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+    'TgmCopyright',
+	'Sitemap',
+	[
+		\TGM\TgmCopyright\Controller\CopyrightController::class => 'sitemap',
     ],
 	// non-cacheable actions
 	[
@@ -16,10 +24,15 @@ if (!defined('TYPO3_MODE')) {
     ]
 );
 
-if(TYPO3_MODE === 'BE') {
+// if(TYPO3_MODE === 'BE') {
+(function() {
     if(true === (bool) \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
-            ->get('tgm_copyright', 'copyrightRequired')) {
-        $pageRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/TgmCopyright/RequiredFileReferenceFields');
+    ->get('tgm_copyright', 'copyrightRequired')) {
+        try {
+            $pageRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
+            $pageRenderer->loadRequireJsModule('TYPO3/CMS/TgmCopyright/RequiredFileReferenceFields');
+        } catch (Exception $exc) {
+        }
     }
-}
+})();
+// }

@@ -17,3 +17,4 @@ plugin.tx_tgmcopyright_main {
 		createSitemap = 1
 	}
 }
+plugin.tx_tgmcopyright_sitemap < plugin.tx_tgmcopyright_main
