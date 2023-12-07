@@ -32,7 +32,6 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -106,7 +105,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
             $queryBuilder->expr()->in('file.type', [2, 5]),
             $queryBuilder->expr()->eq('p.no_index', 0),
             $queryBuilder->expr()->eq('p.no_follow', 0),
-            $queryBuilder->expr()->eq('p.hidden’, 0),
+            $queryBuilder->expr()->eq('p.hidden', 0),
         ];
 
         if ('' !== $rootlines && NULL !== $rootlines) {
@@ -178,9 +177,18 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
 
         $finalRecords = [];
 
+        // Get Schema to check if tables exist before accessing them
+        /** @var Connection $connection */
+        $connection = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('tt_content');
+        $dbSchema = $connection->getSchemaInformation();
+
         foreach($preResults as $preResult) {
+
             if((isset($preResult['tablenames']) && isset($preResult['uid_foreign']))
-                && (strlen($preResult['tablenames']) > 0 && strlen($preResult['uid_foreign']) > 0))
+                && (strlen($preResult['tablenames']) > 0 && strlen($preResult['uid_foreign']) > 0)
+                && true === in_array($preResult['tablenames'], $dbSchema->listTableNames())
+            )
                 {
 
                 /*
@@ -253,7 +261,6 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         $recursiveStoragePids = $pidList;
         $storagePids = GeneralUtility::intExplode(',', $pidList);
         foreach ($storagePids as $startPid) {
-            // $pids = $queryGenerator->getTreeList($startPid, $recursive, 0, 1);
             // MODIFIED: function getTreeList copied from TYPO3 11's
             // \TYPO3\CMS\Core\Database\QueryGenerator because it has been removed in v12.
             $pids = $this->getTreeList($startPid, $recursive, 0, 1);

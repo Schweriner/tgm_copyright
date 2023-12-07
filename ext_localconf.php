@@ -23,16 +23,3 @@ if (!defined('TYPO3')) {
 		\TGM\TgmCopyright\Controller\CopyrightController::class => 'sitemap',
     ]
 );
-
-// if(TYPO3_MODE === 'BE') {
-(function() {
-    if(true === (bool) \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
-    ->get('tgm_copyright', 'copyrightRequired')) {
-        try {
-            $pageRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
-            $pageRenderer->loadRequireJsModule('TYPO3/CMS/TgmCopyright/RequiredFileReferenceFields');
-        } catch (Exception $exc) {
-        }
-    }
-})();
-// }
