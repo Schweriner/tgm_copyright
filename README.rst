@@ -14,8 +14,10 @@ A full documentation can be found in the wiki: https://github.com/teamgeist/tgm_
 
 The development of this Extension is sponsored by https://nerdost.net - thanks!
 
-Also thanks to Joel Schmidt from magenta Mannheim GmbH for 11 LTS compatibility contributions!
+Thanks to all other contributors:
 
-Thanks to Henrik Elsner for rewriting the sitemap-queries to doctrine queries!
-
-Thanks to https://github.com/dominiklippl for his bug-prevention contributions!
+Henrik Elsner
+https://github.com/dominiklippl
+Joel Schmidt
+Felix Leismüller
+https://github.com/j-schmidt-magenta-mannheim
