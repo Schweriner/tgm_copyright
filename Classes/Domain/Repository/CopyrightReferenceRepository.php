@@ -104,6 +104,9 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
             $queryBuilder->expr()->eq('missing', 0),
             $queryBuilder->expr()->isNotNull('file.uid'),
             $queryBuilder->expr()->in('file.type', [2, 5]),
+            $queryBuilder->expr()->eq('p.no_index', 0),
+            $queryBuilder->expr()->eq('p.no_follow', 0),
+            $queryBuilder->expr()->eq('p.hidden’, 0),
         ];
 
         if ('' !== $rootlines && NULL !== $rootlines) {
