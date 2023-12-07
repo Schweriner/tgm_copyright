@@ -64,8 +64,10 @@ plugin.tx_tgmcopyright_main {
     }
   }
 }
+plugin.tx_tgmcopyright_sitemap < plugin.tx_tgmcopyright_main
 
 # TODO: Generate the sitemap with a seo-sitemap-provider
+# TODO: No switchableControllerActions in TYPO3 12: https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/10.3/Deprecation-89463-SwitchableControllerActions.html
 [{$plugin.tx_tgmcopyright_main.settings.createSitemap} == '1']
 image-sitemap = PAGE
 image-sitemap {
@@ -83,15 +85,8 @@ image-sitemap {
   10 {
     userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
     extensionName = TgmCopyright
-    pluginName = Main
+    pluginName = Sitemap
     vendorName = TGM
-    switchableControllerActions {
-      Copyright {
-        1 = sitemap
-      }
-    }
   }
 }
 [end]
-
-

@@ -54,6 +54,9 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function listAction()
     {
+        if(false === isset($this->settings['onlyCurrentPage'])) {
+            $this->settings['onlyCurrentPage'] = false;
+        }
 
         if(false === isset($this->settings['onlyCurrentPage'])) {
             $this->settings['onlyCurrentPage'] = false;
@@ -69,12 +72,14 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
             'copyrightReferences' => $copyrightReferences,
             'copyrights' => $copyrightReferences,
         ]);
-
+        
+        return $this->htmlResponse();
     }
 
     public function initializeSitemapAction()
     {
-        $this->request->setFormat('xml');
+        $this->request = $this->request->withFormat('xml');
+        // $this->request->setFormat('xml');
     }
 
     /**
@@ -83,7 +88,6 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
      */
     public function sitemapAction()
     {
-
         $groupedReferences = array();
         $copyrightReferences = $this->copyrightReferenceRepository->findForSitemap($this->settings['rootlines']);
 
@@ -127,7 +131,8 @@ class CopyrightController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
         }
 
         $this->view->assign('groupedReferences', $groupedReferences);
-
+        
+        return $this->htmlResponse();
     }
 
     /**
