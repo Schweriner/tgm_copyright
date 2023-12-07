@@ -20,7 +20,7 @@ $EM_CONF[$_EXTKEY] = [
     'author' => 'Paul Beck',
     'author_email' => 'hi@toll-paul.de',
     'author_company' => "Nerdost GmbH",
-    'version' => '3.3.0',
+    'version' => '3.3.1',
     'constraints' => [
         'depends' =>
             [
