@@ -1,4 +1,7 @@
 <?php
+
+use Psr\Http\Message\ServerRequestInterface;
+
 if (!defined('TYPO3')) {
 	die('Access denied.');
 }
@@ -7,7 +10,10 @@ if (!defined('TYPO3')) {
     /** @var \TYPO3\CMS\Core\Context\Context $context */
     $context = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Context\Context::class);
     if(true === (bool) $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['tgm_copyright']['copyrightRequired']
-        && true === \TYPO3\CMS\Core\Http\ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isBackend()
+        && (
+            !(($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface)
+                || false === \TYPO3\CMS\Core\Http\ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
+        )
     )
      {
         try {
