@@ -79,7 +79,7 @@ class CopyrightReferenceRepository extends \TYPO3\CMS\Extbase\Persistence\Reposi
         // Final select
         if(false === empty($finalRecords)) {
             $finalQuery = $this->createQuery();
-            return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE uid IN(' . implode(',', $finalRecords) . ')')->execute();
+            return $finalQuery->statement('SELECT * FROM sys_file_reference WHERE AND deleted=0 AND hidden=0 uid IN(' . implode(',', $finalRecords) . ')')->execute();
         }
 
         return [];
