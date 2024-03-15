@@ -90,10 +90,15 @@ class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
     {
         if($this->title) {
             return $this->title;
-        } else if($this->getOriginalResource()->getProperty('title')) {
-            return $this->getOriginalResource()->getProperty('title');
         }
-        return FALSE;
+        try {
+            if($this->getOriginalResource()->getProperty('title')) {
+                return $this->getOriginalResource()->getProperty('title');
+            }
+        } catch(\Exception $e) {
+            // May not exists and causes error
+        }
+        return false;
     }
 
     /**
@@ -103,10 +108,15 @@ class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
     {
         if($this->description) {
             return $this->description;
-        } else if($this->getOriginalResource()->getProperty('description')) {
-            return $this->getOriginalResource()->getProperty('description');
         }
-        return FALSE;
+        try {
+            if($this->getOriginalResource()->getProperty('description')) {
+                return $this->getOriginalResource()->getProperty('description');
+            }
+        } catch(\Exception $e) {
+            // May not exists and causes error
+        }
+        return false;
     }
 
     /**
@@ -114,13 +124,22 @@ class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
      */
     public function getPublicUrl()
     {
-        if(false === \TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($this->getOriginalResource()->getPublicUrl())) {
+        try {
+            $originalResource = $this->getOriginalResource();
+        } catch (\Exception $e) {
+            // May not exists
+            return '';
+        }
+        if($originalResource->getProperty('description')) {
+            return $originalResource->getProperty('description');
+        }
+        if(false === \TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($originalResource->getPublicUrl())) {
             /** @var \TYPO3\CMS\Core\Http\NormalizedParams $requestAttributes */
             $requestAttributes = $GLOBALS['TYPO3_REQUEST']->getAttributes()['normalizedParams'];
             return $requestAttributes->getRequestHost() . '/'
                 . ltrim($this->getOriginalResource()->getPublicUrl(), '/');
         }
-        return $this->getOriginalResource()->getPublicUrl();
+        return $originalResource->getPublicUrl();
     }
 
     /**
