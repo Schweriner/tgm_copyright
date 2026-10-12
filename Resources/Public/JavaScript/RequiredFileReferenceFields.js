@@ -1,43 +1,67 @@
-import $ from 'jquery';
+import DocumentService from '@typo3/core/document-service.js';
 
+/**
+ * Flags the copyright field of file references as required by toggling the
+ * "has-error" class on the surrounding palette field group when no value is
+ * set. This is a backend authoring aid enabled via the extension setting
+ * "copyrightRequired".
+ *
+ * Rewritten for TYPO3 v14: the FormEngine no longer uses jQuery and dispatches
+ * "t3-formengine-postfieldvalidation" as a native, bubbling CustomEvent on the
+ * edit form. Both v13 and v14 behave this way.
+ */
 function validateReferenceFields() {
-  const $referenceFields = $('.t3js-formengine-placeholder-formfield input[type="hidden"][name$="[copyright]"]');
+    const referenceFields = document.querySelectorAll(
+        '.t3js-formengine-placeholder-formfield input[type="hidden"][name$="[copyright]"]',
+    );
 
-  $referenceFields.each(function () {
-    const $field = $(this);
-    const $parentFieldGroup = $field.closest('.t3js-formengine-palette-field');
+    referenceFields.forEach((field) => {
+        if (!(field instanceof HTMLInputElement)) {
+            return;
+        }
 
-    if ($field.parents('.t3js-inline-record-deleted').length === 0) {
-      const nullCheckboxChecked = $parentFieldGroup
-        .find('.t3js-form-field-eval-null-placeholder-checkbox input')
-        .is(':checked');
+        const parentFieldGroup = field.closest('.t3js-formengine-palette-field');
+        if (parentFieldGroup === null) {
+            return;
+        }
 
-      const placeholderValue = $parentFieldGroup
-        .find('.t3js-formengine-placeholder-placeholder input')
-        .val();
+        if (field.closest('.t3js-inline-record-deleted') !== null) {
+            parentFieldGroup.classList.remove('has-error');
+            return;
+        }
 
-      const hiddenValue = $field.val();
+        const nullCheckbox = parentFieldGroup.querySelector(
+            '.t3js-form-field-eval-null-placeholder-checkbox input',
+        );
+        const nullCheckboxChecked = nullCheckbox instanceof HTMLInputElement && nullCheckbox.checked;
 
-      const placeholderIsEmpty = (placeholderValue ?? '').toString() === '';
-      const hiddenIsEmpty = (hiddenValue ?? '').toString() === '';
+        const placeholderInput = parentFieldGroup.querySelector(
+            '.t3js-formengine-placeholder-placeholder input',
+        );
+        const placeholderIsEmpty = !(placeholderInput instanceof HTMLInputElement) || placeholderInput.value === '';
+        const hiddenIsEmpty = field.value === '';
 
-      if (nullCheckboxChecked === false && placeholderIsEmpty) {
-        $parentFieldGroup.addClass('has-error');
-      } else if (nullCheckboxChecked === true && hiddenIsEmpty) {
-        $parentFieldGroup.addClass('has-error');
-      } else {
-        $parentFieldGroup.removeClass('has-error');
-      }
-    } else {
-      $parentFieldGroup.removeClass('has-error');
-    }
-  });
+        const hasError = (nullCheckboxChecked === false && placeholderIsEmpty)
+            || (nullCheckboxChecked === true && hiddenIsEmpty);
+
+        parentFieldGroup.classList.toggle('has-error', hasError);
+    });
 }
 
-$(document).on('t3-formengine-postfieldvalidation', function () {
-  validateReferenceFields();
-});
+DocumentService.ready().then(() => {
+    validateReferenceFields();
 
-$(document).on('change', '.t3js-form-field-eval-null-placeholder-checkbox input', function () {
-  validateReferenceFields();
+    // FormEngine dispatches this as a native bubbling CustomEvent on the form.
+    document.addEventListener('t3-formengine-postfieldvalidation', () => {
+        validateReferenceFields();
+    });
+
+    document.addEventListener('change', (event) => {
+        const target = event.target;
+        if (target instanceof HTMLInputElement
+            && target.closest('.t3js-form-field-eval-null-placeholder-checkbox') !== null
+        ) {
+            validateReferenceFields();
+        }
+    });
 });

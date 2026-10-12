@@ -1,0 +1,8 @@
+path:
+    - Classes
+    - Configuration
+    - ext_localconf.php
+jobs: 10
+cache-dir: .build/.phplint.cache
+extensions:
+    - php

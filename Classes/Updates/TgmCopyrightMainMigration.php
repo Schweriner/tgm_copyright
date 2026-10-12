@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TGM\TgmCopyright\Updates;
 
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;

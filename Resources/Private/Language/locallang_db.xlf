@@ -6,6 +6,12 @@
 			<trans-unit id="tx_tgmcopyright_domain_model_copyright">
 				<source>Copyright</source>
 			</trans-unit>
+			<trans-unit id="sys_file_metadata.copyright">
+				<source>Copyright</source>
+			</trans-unit>
+			<trans-unit id="sys_file_metadata.copyright.description">
+				<source>Credit for this file, for example the photographer or the agency. It is shown as placeholder on every image reference of the file and can be overridden there.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

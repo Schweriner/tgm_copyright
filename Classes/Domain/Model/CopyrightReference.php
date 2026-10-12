@@ -1,6 +1,10 @@
 <?php
+
 namespace TGM\TgmCopyright\Domain\Model;
 
+use TYPO3\CMS\Core\Http\NormalizedParams;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
 /***************************************************************
  *
@@ -26,13 +30,11 @@ namespace TGM\TgmCopyright\Domain\Model;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * Copyright
  */
-class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
+class CopyrightReference extends FileReference
 {
-
     /**
      * copyright
      * @var string
@@ -55,155 +57,135 @@ class CopyrightReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference
      */
     protected $tablenames = '';
 
-	/**
-	 * @var int
-	 */
-	protected $uidForeign = 0;
+    /**
+     * @var int
+     */
+    protected $uidForeign = 0;
 
     /**
      * Will be set inside the controller
-     * @var array
+     * @var list<int>
      */
-	protected $usagePids = [];
+    protected $usagePids = [];
 
     /**
      * Will be set inside the controller
      * @var string
      */
-	protected $additionalLinkParams = '';
-
+    protected $additionalLinkParams = '';
 
     /**
-     * Returns the copyright
-     *
-     * @return string $copyright
+     * Returns the copyright. May be null when the reference is hydrated from a
+     * sys_file_reference row whose nullable copyright column is not set.
      */
-    public function getCopyright()
+    public function getCopyright(): ?string
     {
         return $this->copyright;
     }
 
-    /**
-     * @return bool|string
-     */
-    public function getTitle()
+    public function getTitle(): bool|string
     {
-        if($this->title) {
+        if ($this->title !== '') {
             return $this->title;
         }
+
         try {
-            if($this->getOriginalResource()->getProperty('title')) {
-                return $this->getOriginalResource()->getProperty('title');
+            $title = $this->getOriginalResource()->getProperty('title');
+            if ($title !== null && $title !== '') {
+                return (string)$title;
             }
-        } catch(\Exception $e) {
-            // May not exists and causes error
+        } catch (\Exception) {
+            // May not exist and causes error
         }
+
         return false;
     }
 
-    /**
-     * @return bool|mixed|string
-     */
-    public function getDescription()
+    public function getDescription(): bool|string
     {
-        if($this->description) {
+        if ($this->description !== '') {
             return $this->description;
         }
+
         try {
-            if($this->getOriginalResource()->getProperty('description')) {
-                return $this->getOriginalResource()->getProperty('description');
+            $description = $this->getOriginalResource()->getProperty('description');
+            if ($description !== null && $description !== '') {
+                return (string)$description;
             }
-        } catch(\Exception $e) {
-            // May not exists and causes error
+        } catch (\Exception) {
+            // May not exist and causes error
         }
+
         return false;
     }
 
-    /**
-     * @return string image public url
-     */
-    public function getPublicUrl()
+    public function getPublicUrl(): string
     {
         try {
             $originalResource = $this->getOriginalResource();
-        } catch (\Exception $e) {
-            // May not exists
+        } catch (\Exception) {
+            // May not exist
             return '';
         }
-        if($originalResource->getProperty('description')) {
-            return $originalResource->getProperty('description');
+
+        $description = $originalResource->getProperty('description');
+        if ($description !== null && $description !== '') {
+            return (string)$description;
         }
-        if(false === \TYPO3\CMS\Core\Utility\GeneralUtility::isValidUrl($originalResource->getPublicUrl())) {
-            /** @var \TYPO3\CMS\Core\Http\NormalizedParams $requestAttributes */
+
+        $publicUrl = (string)$originalResource->getPublicUrl();
+        if (GeneralUtility::isValidUrl($publicUrl) === false) {
+            /** @var NormalizedParams $requestAttributes */
             $requestAttributes = $GLOBALS['TYPO3_REQUEST']->getAttributes()['normalizedParams'];
-            return $requestAttributes->getRequestHost() . '/'
-                . ltrim($this->getOriginalResource()->getPublicUrl(), '/');
+            return $requestAttributes->getRequestHost() . '/' . ltrim($publicUrl, '/');
         }
-        return $originalResource->getPublicUrl();
+
+        return $publicUrl;
     }
 
-    /**
-     * @return string
-     */
-    public function getTablenames()
+    public function getTablenames(): string
     {
         return $this->tablenames;
     }
 
-    /**
-     * @param string $tablenames
-     */
-    public function setTablenames($tablenames)
+    public function setTablenames(string $tablenames): void
     {
         $this->tablenames = $tablenames;
     }
 
-	/**
-	 * @return int
-	 */
-	public function getUidForeign()
-	{
-		return $this->uidForeign;
-	}
+    public function getUidForeign(): int
+    {
+        return $this->uidForeign;
+    }
 
-	/**
-	 * @param int $uidForeign
-	 */
-	public function setUidForeign($uidForeign)
-	{
-		$this->uidForeign = $uidForeign;
-	}
+    public function setUidForeign(int $uidForeign): void
+    {
+        $this->uidForeign = $uidForeign;
+    }
 
     /**
-     * @return array
+     * @return list<int>
      */
-    public function getUsagePids()
+    public function getUsagePids(): array
     {
         return $this->usagePids;
     }
 
     /**
-     * @param array $usagePids
+     * @param list<int> $usagePids
      */
-    public function setUsagePids($usagePids)
+    public function setUsagePids(array $usagePids): void
     {
         $this->usagePids = $usagePids;
     }
 
-    /**
-     * @return string
-     */
-    public function getAdditionalLinkParams()
+    public function getAdditionalLinkParams(): string
     {
         return $this->additionalLinkParams;
     }
 
-    /**
-     * @param string $additionalLinkParams
-     */
-    public function setAdditionalLinkParams($additionalLinkParams)
+    public function setAdditionalLinkParams(string $additionalLinkParams): void
     {
         $this->additionalLinkParams = $additionalLinkParams;
     }
-
 }

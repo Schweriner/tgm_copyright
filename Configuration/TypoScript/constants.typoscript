@@ -1,18 +1,18 @@
 plugin.tx_tgmcopyright_main {
-	view {
-		# cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template root (FE)
-		templateRootPath = EXT:tgm_copyright/Resources/Private/Templates/
-		# cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template partials (FE)
-		partialRootPath = EXT:tgm_copyright/Resources/Private/Partials/
-		# cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template layouts (FE)
-		layoutRootPath = EXT:tgm_copyright/Resources/Private/Layouts/
-	}
-	settings {
-		# cat=plugin.tx_tgmcopyright_main/settings; type=string; label=Starting root PIDs to take the copyright references from (comma separated or empty = all rootlines)
-		rootlines =
-		# cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Display copyright below images
-		showCopyright = 0
-		# cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Generate an image sitemap on ?type=1458065166
-		createSitemap = 1
-	}
+    view {
+        # cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:tgm_copyright/Resources/Private/Templates/
+        # cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:tgm_copyright/Resources/Private/Partials/
+        # cat=plugin.tx_tgmcopyright_main/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:tgm_copyright/Resources/Private/Layouts/
+    }
+    settings {
+        # cat=plugin.tx_tgmcopyright_main/settings; type=string; label=Starting root PIDs to take the copyright references from (comma separated or empty = all rootlines)
+        rootlines =
+        # cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Display copyright below images
+        showCopyright = 0
+        # cat=plugin.tx_tgmcopyright_main/settings; type=boolean; label=Generate an image sitemap on ?type=1458065166
+        createSitemap = 1
+    }
 }

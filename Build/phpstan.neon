@@ -1,0 +1,17 @@
+includes:
+    - phpstan-baseline.neon
+    - ../.build/vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - ../.build/vendor/phpstan/phpstan-strict-rules/rules.neon
+    - ../.build/vendor/saschaegerer/phpstan-typo3/extension.neon
+
+parameters:
+    level: 8
+    phpVersion: 80200
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - ../Classes
+        - ../Configuration
+        - ../Tests
+    excludePaths:
+        - ../ext_emconf.php
+    tmpDir: ../.build/phpstan

@@ -1,4 +1,5 @@
 <?php
+
 namespace TGM\TgmCopyright\Controller;
 
 /***************************************************************
@@ -25,11 +26,11 @@ namespace TGM\TgmCopyright\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 use Psr\Http\Message\ResponseInterface;
 use TGM\TgmCopyright\Domain\Model\CopyrightReference;
 use TGM\TgmCopyright\Domain\Repository\CopyrightReferenceRepository;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -44,22 +45,21 @@ class CopyrightController extends ActionController
         private readonly CopyrightReferenceRepository $copyrightReferenceRepository,
         private readonly PageRepository $pageRepository,
         private readonly TypoScriptService $typoScriptService
-    ) {
-    }
-    
+    ) {}
+
     /**
      * action list
      */
     public function listAction(): ResponseInterface
     {
-        if(false === isset($this->settings['onlyCurrentPage'])) {
+        if (isset($this->settings['onlyCurrentPage']) === false) {
             $this->settings['onlyCurrentPage'] = false;
         }
 
         /** @var array<CopyrightReference> $copyrightReferences */
         $copyrightReferences = $this->copyrightReferenceRepository->findByRootline($this->settings);
 
-        if(count($copyrightReferences) > 0) {
+        if (count($copyrightReferences) > 0) {
             $this->processExtensionReferences($copyrightReferences);
         }
 
@@ -79,35 +79,34 @@ class CopyrightController extends ActionController
     /**
      * action sitemap
      */
-    public function sitemapAction()
+    public function sitemapAction(): ResponseInterface
     {
-        $groupedReferences = array();
+        $groupedReferences = [];
         $copyrightReferences = $this->copyrightReferenceRepository->findForSitemap($this->settings['rootlines']);
 
-        if(count($copyrightReferences) > 0) {
+        if ($copyrightReferences !== []) {
 
             $this->processExtensionReferences($copyrightReferences);
 
-            /** @var \TGM\TgmCopyright\Domain\Model\CopyrightReference $copyrightReference */
-            foreach($copyrightReferences as $copyrightReference) {
+            /** @var CopyrightReference $copyrightReference */
+            foreach ($copyrightReferences as $copyrightReference) {
                 foreach ($copyrightReference->getUsagePids() as $usagePid) {
 
                     $additionalArguments = [];
 
-                    if($copyrightReference->getAdditionalLinkParams() !== '') {
+                    if ($copyrightReference->getAdditionalLinkParams() !== '') {
                         $additionalArguments = GeneralUtility::explodeUrl2Array($copyrightReference->getAdditionalLinkParams());
                     }
 
-                    /** @var \TYPO3\CMS\Core\Http\NormalizedParams $requestAttributes */
+                    /** @var NormalizedParams $requestAttributes */
                     $requestAttributes = $GLOBALS['TYPO3_REQUEST']->getAttributes()['normalizedParams'];
 
                     $imagePath = $this->uriBuilder->reset()->setCreateAbsoluteUri(false)
                         ->setTargetPageUid($usagePid)->setArguments($additionalArguments)->buildFrontendUri();
 
-
                     $parsedUrl = parse_url($imagePath);
 
-                    if(false === isset($parsedUrl['host'])) {
+                    if (isset($parsedUrl['host']) === false) {
                         $imagePath = $requestAttributes->getRequestHost() . $imagePath;
                     }
 
@@ -129,49 +128,42 @@ class CopyrightController extends ActionController
     }
 
     /**
-     * @param \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $copyrightReferences
+     * @param array<int, CopyrightReference> $copyrightReferences
      */
-    private function processExtensionReferences(&$copyrightReferences) {
-
+    private function processExtensionReferences(array &$copyrightReferences): void
+    {
         $allExtensionTablesConfiguration = $this->settings['extensiontables'];
 
         /** @var ContentObjectRenderer $contentObject */
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
 
-        /** @var \TGM\TgmCopyright\Domain\Model\CopyrightReference $copyrightReference */
+        /** @var CopyrightReference $copyrightReference */
         foreach ($copyrightReferences as $copyrightReference) {
 
             $additionalLinkParams = '';
 
-            if(true === isset($allExtensionTablesConfiguration[$copyrightReference->getTablenames()])
-                && true === isset($allExtensionTablesConfiguration[$copyrightReference->getTablenames()]['detailPid'])
-            ) {
-
+            if (isset($allExtensionTablesConfiguration[$copyrightReference->getTablenames()])
+                && isset($allExtensionTablesConfiguration[$copyrightReference->getTablenames()]['detailPid'])) {
                 $singleExtensionTableConfiguration = $allExtensionTablesConfiguration[$copyrightReference->getTablenames()];
-
-                if(gettype($singleExtensionTableConfiguration['detailPid']) === 'array') {
+                if (is_array($singleExtensionTableConfiguration['detailPid'])) {
                     $tsArray = $this->typoScriptService->convertPlainArrayToTypoScriptArray($singleExtensionTableConfiguration['detailPid']);
 
-                    $rawRecord = $this->pageRepository->getRawRecord($copyrightReference->getTablenames(), $copyrightReference->getUidForeign());
+                    $rawRecord = $this->pageRepository->getRawRecord($copyrightReference->getTablenames(), $copyrightReference->getUidForeign()) ?? [];
 
                     $contentObject->start($rawRecord, $copyrightReference->getTablenames());
 
                     $tsResult = $contentObject->cObjGetSingle($tsArray['_typoScriptNodeValue'], $tsArray);
 
-                    $usagePids = GeneralUtility::trimExplode(',',$tsResult,true);
-
+                    $usagePids = array_map(intval(...), GeneralUtility::trimExplode(',', $tsResult, true));
                 } else {
-
-                    $usagePids = [$singleExtensionTableConfiguration['detailPid']];
-
+                    $usagePids = [(int)$singleExtensionTableConfiguration['detailPid']];
                 }
 
-                if(false === empty($singleExtensionTableConfiguration['linkParam'])) {
+                if (($singleExtensionTableConfiguration['linkParam'] ?? '') !== '') {
                     $additionalLinkParams = $singleExtensionTableConfiguration['linkParam'] . $copyrightReference->getUidForeign();
                 }
-
-            } else if(true === in_array($copyrightReference->getTablenames(),['tt_content','pages'])) {
-                $usagePids = [$copyrightReference->getPid()];
+            } elseif (in_array($copyrightReference->getTablenames(), ['tt_content', 'pages'], true)) {
+                $usagePids = [(int)$copyrightReference->getPid()];
             } else {
                 $usagePids = [];
             }

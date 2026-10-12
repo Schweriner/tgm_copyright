@@ -4,25 +4,84 @@
   "description": "TYPO3 Image Copyrights and Image Sitemap",
   "homepage": "https://www.toll-paul.de",
   "license": ["GPL-2.0+"],
-  "version": "4.0.0",
   "keywords": ["TYPO3 CMS", "copyright", "images", "sitemap"],
   "support": {
     "issues": "https://github.com/Schweriner/tgm_copyright/issues"
   },
   "require": {
-    "typo3/cms-core": "^13.4"
+    "typo3/cms-backend": "^13.4 || ^14.3",
+    "typo3/cms-core": "^13.4 || ^14.3",
+    "typo3/cms-extbase": "^13.4 || ^14.3",
+    "typo3/cms-fluid": "^13.4 || ^14.3",
+    "typo3/cms-frontend": "^13.4 || ^14.3"
+  },
+  "suggest": {
+    "typo3/cms-filemetadata": "Makes this extension load after it, so the copyright field stays in the file metadata form"
+  },
+  "config": {
+    "bin-dir": ".build/bin",
+    "vendor-dir": ".build/vendor",
+    "platform-check": false,
+    "sort-packages": true,
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true,
+      "a9f/fractor-extension-installer": true,
+      "php-http/discovery": true
+    }
+  },
+  "require-dev": {
+    "a9f/typo3-fractor": "^0.5",
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "overtrue/phplint": "^9.0",
+    "phpstan/phpstan": "^2.0",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
+    "phpstan/phpstan-strict-rules": "^2.0",
+    "phpunit/phpunit": "^11.5 || ^12.5 || ^13.4",
+    "saschaegerer/phpstan-typo3": "^2.0 || ^3.0",
+    "ssch/typo3-rector": "^3.0",
+    "typo3/coding-standards": "^0.8"
   },
   "autoload": {
     "psr-4": {
       "TGM\\TgmCopyright\\": "Classes/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "TGM\\TgmCopyright\\Tests\\": "Tests/"
+    }
+  },
+  "scripts": {
+    "ci:php:lint": "phplint --configuration Build/.phplint.yml",
+    "ci:php:cgl": "php-cs-fixer fix --config Build/.php-cs-fixer.dist.php --diff",
+    "ci:php:cgl:check": "@ci:php:cgl --dry-run",
+    "ci:php:phpstan": "phpstan analyze --configuration Build/phpstan.neon --memory-limit=-1",
+    "ci:php:unit": "phpunit --configuration Build/phpunit.xml",
+    "ci:php:phpstan:baseline": "phpstan analyze --configuration Build/phpstan.neon --memory-limit=-1 --generate-baseline Build/phpstan-baseline.neon --allow-empty-baseline",
+    "ci:php:rector": "rector process --config Build/rector.php",
+    "ci:php:rector:check": "@ci:php:rector --dry-run",
+    "ci:php:fractor": "fractor process --config Build/fractor.php",
+    "ci:php:fractor:check": "@ci:php:fractor --dry-run",
+    "ci:test": [
+      "@ci:php:lint",
+      "@ci:php:phpstan",
+      "@ci:php:unit",
+      "@ci:php:rector:check",
+      "@ci:php:fractor:check",
+      "@ci:php:cgl:check"
+    ]
+  },
   "replace": {
     "typo3-ter/tgm-copyright": "self.version"
   },
   "extra": {
     "typo3/cms": {
-      "extension-key": "tgm_copyright"
+      "extension-key": "tgm_copyright",
+      "web-dir": ".build/public"
+    },
+    "branch-alias": {
+      "dev-TYPO3-14": "14.0.x-dev"
     }
   }
 }
