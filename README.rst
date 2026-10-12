@@ -16,6 +16,7 @@ The development of this Extension is sponsored by https://nerdost.net - thanks!
 
 Thanks to all other contributors:
 
+https://github.com/magicsunday
 Henrik Elsner
 https://github.com/dominiklippl
 Joel Schmidt
