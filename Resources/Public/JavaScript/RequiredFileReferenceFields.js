@@ -16,6 +16,7 @@ function validateReferenceFields() {
     );
 
     referenceFields.forEach((field) => {
+
         if (!(field instanceof HTMLInputElement)) {
             return;
         }
@@ -31,7 +32,7 @@ function validateReferenceFields() {
         }
 
         const nullCheckbox = parentFieldGroup.querySelector(
-            '.t3js-form-field-eval-null-placeholder-checkbox input',
+            '.t3js-form-field-eval-null-placeholder-checkbox input.form-check-input',
         );
         const nullCheckboxChecked = nullCheckbox instanceof HTMLInputElement && nullCheckbox.checked;
 
